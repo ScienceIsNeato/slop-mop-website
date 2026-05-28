@@ -1,0 +1,14 @@
+{
+  "name": "slop-mop-website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx http-server",
+    "build": "echo 'Static site — no build needed'",
+    "type-check": "echo 'No TypeScript'",
+    "start": "npx http-server"
+  },
+  "devDependencies": {
+    "wrangler": "^4.94.0"
+  }
+}

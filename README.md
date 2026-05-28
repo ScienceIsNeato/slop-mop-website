@@ -6,11 +6,11 @@ Website for the slop-mop quality gate orchestration tool.
 
 ```bash
 # Serve locally
-npx http-server
+npx http-server public
 ```
 
 ## Structure
 
-- `index.html` — landing page
+- `public/index.html` — landing page
 - `docs/` — documentation (synced from slop-mop repo)
 - `assets/` — images, styles, etc.

@@ -1,684 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>slop-mop — Break agent loops before they hit main</title>
-    <meta name="description" content="slop-mop is the intervention rail for AI-assisted repos: swab early, buff PRs, and keep generated code dense, reviewable, and mergeable.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #090b10;
-            --bg-elevated: rgba(18, 21, 30, 0.92);
-            --panel: rgba(15, 17, 24, 0.9);
-            --panel-strong: rgba(10, 12, 18, 0.96);
-            --line: rgba(152, 167, 255, 0.16);
-            --text: #f4f1ea;
-            --muted: #b4b0a8;
-            --blue: #7b8cff;
-            --violet: #8860e6;
-            --green: #98ef8a;
-            --amber: #ffd479;
-            --red: #ff7d72;
-            --shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            min-height: 100vh;
-            overflow-x: hidden;
-            font-family: 'Manrope', sans-serif;
-            line-height: 1.55;
-            color: var(--text);
-            background:
-                radial-gradient(circle at 15% 0%, rgba(97, 120, 255, 0.42), transparent 35%),
-                radial-gradient(circle at 85% 10%, rgba(151, 101, 255, 0.28), transparent 30%),
-                linear-gradient(180deg, #11141b 0%, #090b10 45%, #07080c 100%);
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-            background-size: 34px 34px;
-            opacity: 0.12;
-            mask-image: radial-gradient(circle at center, black 45%, transparent 95%);
-        }
-
-        a {
-            color: inherit;
-        }
-
-        .shell {
-            width: min(1240px, calc(100% - 2rem));
-            margin: 0 auto;
-            padding: 1.5rem 0 4rem;
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: clamp(1.4rem, 2vw, 2rem);
-            border: 1px solid var(--line);
-            border-radius: 30px;
-            background:
-                linear-gradient(135deg, rgba(26, 31, 46, 0.95), rgba(11, 13, 20, 0.98)),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
-            box-shadow: var(--shadow);
-            isolation: isolate;
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: auto -10% -30% auto;
-            width: 34rem;
-            height: 34rem;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(123, 140, 255, 0.22), transparent 65%);
-            filter: blur(10px);
-            z-index: -1;
-        }
-
-        .topline {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-        }
-
-        .brand-mark {
-            display: grid;
-            place-items: center;
-            width: 3.3rem;
-            height: 3.3rem;
-            border-radius: 18px;
-            font-size: 1.55rem;
-            background: linear-gradient(135deg, rgba(123, 140, 255, 0.3), rgba(136, 96, 230, 0.4));
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        }
-
-        .brand-copy strong {
-            display: block;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.3rem;
-            line-height: 0.9;
-            letter-spacing: 0.04em;
-        }
-
-        .brand-copy span,
-        .eyebrow,
-        .section-tag,
-        .terminal-label,
-        .strip-item {
-            text-transform: uppercase;
-            letter-spacing: 0.16em;
-            font-size: 0.74rem;
-            color: var(--muted);
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            padding: 0.45rem 0.7rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-            gap: 1.5rem;
-            align-items: start;
-        }
-
-        .hero-copy h1 {
-            max-width: 12ch;
-            margin-top: 1rem;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(4.5rem, 9vw, 8.8rem);
-            line-height: 0.9;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            text-wrap: balance;
-        }
-
-        .hero-copy p {
-            max-width: 62ch;
-            margin-top: 1rem;
-            font-size: 1.08rem;
-            color: #d8d5cf;
-        }
-
-        .hero-points {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.7rem;
-            margin-top: 1.4rem;
-        }
-
-        .hero-points li,
-        .strip-item {
-            list-style: none;
-            padding: 0.75rem 0.9rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.04);
-            color: #efebe5;
-        }
-
-        .hero-side {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .callout,
-        .metric-panel,
-        .section-block,
-        .footer-panel {
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-        }
-
-        .callout {
-            padding: 1.3rem;
-        }
-
-        .callout h2,
-        .section-block h2,
-        .cta-panel h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(2rem, 4vw, 3rem);
-            letter-spacing: 0.04em;
-            line-height: 0.95;
-            text-transform: uppercase;
-        }
-
-        .callout p {
-            margin-top: 0.85rem;
-            color: #d0ccc5;
-        }
-
-        .metric-panel {
-            display: grid;
-            gap: 0.8rem;
-            padding: 1.3rem;
-        }
-
-        .metric {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 0.5rem;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .metric:last-child {
-            border-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .metric-value {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 1rem;
-            color: var(--green);
-        }
-
-        .content-grid {
-            display: grid;
-            gap: 1.35rem;
-            margin-top: 1.6rem;
-        }
-
-        .demo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-        }
-
-        .terminal {
-            padding: 1rem;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: linear-gradient(180deg, rgba(14, 17, 24, 0.95), rgba(9, 11, 16, 0.96));
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-
-        .terminal-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.9rem;
-        }
-
-        .terminal-dots {
-            display: inline-flex;
-            gap: 0.3rem;
-        }
-
-        .terminal-dots span {
-            width: 0.7rem;
-            height: 0.7rem;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.16);
-        }
-
-        .terminal pre,
-        .install-command code {
-            font-family: 'IBM Plex Mono', monospace;
-            white-space: pre-wrap;
-        }
-
-        .terminal pre {
-            font-size: 0.88rem;
-            color: #d7d7cf;
-        }
-
-        .bad {
-            color: var(--red);
-        }
-
-        .good {
-            color: var(--green);
-        }
-
-        .strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .protocol-grid,
-        .feature-grid,
-        .cta-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .protocol-grid,
-        .feature-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .section-block,
-        .cta-panel {
-            padding: 1.4rem;
-        }
-
-        .section-block p,
-        .card p,
-        .cta-panel p {
-            color: #cbc7c0;
-        }
-
-        .card {
-            padding: 1.15rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .card h3 {
-            margin: 0.55rem 0 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .card-icon {
-            display: inline-grid;
-            place-items: center;
-            width: 2.4rem;
-            height: 2.4rem;
-            border-radius: 14px;
-            background: rgba(123, 140, 255, 0.14);
-            border: 1px solid rgba(123, 140, 255, 0.25);
-            font-size: 1.1rem;
-        }
-
-        .cta-panel {
-            margin-top: 1.3rem;
-            background:
-                linear-gradient(135deg, rgba(123, 140, 255, 0.14), rgba(136, 96, 230, 0.14)),
-                var(--panel-strong);
-        }
-
-        .cta-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            margin-top: 1rem;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 3.4rem;
-            padding: 0.95rem 1.2rem;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-decoration: none;
-            text-align: center;
-            font-weight: 800;
-            transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            border-color: rgba(123, 140, 255, 0.46);
-        }
-
-        .button-primary {
-            background: linear-gradient(135deg, var(--blue), var(--violet));
-            color: white;
-        }
-
-        .button-secondary {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .install-command {
-            margin-top: 1rem;
-            padding: 1rem 1.1rem;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(5, 7, 11, 0.78);
-            color: #e7f2d5;
-            overflow-x: auto;
-        }
-
-        footer {
-            margin-top: 1.4rem;
-        }
-
-        .footer-panel {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 1rem 1.2rem;
-            color: var(--muted);
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .footer-links a {
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            color: var(--text);
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero,
-        .section-block,
-        .cta-panel,
-        .footer-panel {
-            animation: fadeUp 500ms ease both;
-        }
-
-        @media (max-width: 980px) {
-            .hero-grid,
-            .demo-grid,
-            .protocol-grid,
-            .feature-grid,
-            .cta-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-copy h1 {
-                max-width: none;
-            }
-        }
-
-        @media (max-width: 720px) {
-            .shell {
-                width: min(100% - 1rem, 1240px);
-                padding-top: 0.5rem;
-            }
-
-            .hero,
-            .section-block,
-            .cta-panel,
-            .footer-panel {
-                border-radius: 22px;
-            }
-
-            .hero {
-                padding: 1rem;
-            }
-
-            .hero-copy h1 {
-                font-size: clamp(3.6rem, 18vw, 5.4rem);
-            }
-
-            .button {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>slop-mop — a friction layer for coding agents</title>
+  <meta name="description" content="slop-mop is a gate system for coding agents. It catches the shortcuts they reach for and redirects them into real cleanup work. It works by moving the rule outside the loop." />
+  <meta property="og:title" content="slop-mop" />
+  <meta property="og:description" content="A friction layer for coding agents. Move the rule outside the loop." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.slop-mop.com/" />
+  <link rel="canonical" href="https://www.slop-mop.com/" />
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --ink: #1f2421;
+      --ink-soft: #4a514c;
+      --ink-faint: #767d77;
+      --rule: #e0dcd2;
+      --accent: #2f6b63;
+      --accent-soft: #e8efed;
+      --code-bg: #efece4;
+      --max: 46rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #14171a;
+        --ink: #e9e9e3;
+        --ink-soft: #b6bbb4;
+        --ink-faint: #828b84;
+        --rule: #2a2f33;
+        --accent: #7fb8ad;
+        --accent-soft: #1b2421;
+        --code-bg: #1b1f22;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem 5rem;
+    }
+    code, kbd, .mono {
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+      font-size: 0.92em;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 120ms ease;
+    }
+    a:hover { border-bottom-color: var(--accent); }
+
+    header { margin-bottom: 3rem; }
+    .wordmark {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .wordmark .bucket { font-family: Georgia, serif; }
+    .tagline {
+      margin: 0.85rem 0 0;
+      color: var(--ink-soft);
+      font-size: 1.0625rem;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: var(--ink);
+      margin: 0 0 1.25rem;
+    }
+    .lead--quiet { color: var(--ink-soft); font-size: 1.05rem; }
+
+    section { margin-top: 3.25rem; }
+    h2 {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 0 0 1rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      margin: 0 0 0.5rem;
+      color: var(--ink);
+    }
+    p { margin: 0 0 1.1rem; }
+    p:last-child { margin-bottom: 0; }
+
+    .audience { margin-top: 1.75rem; }
+    .audience + .audience { margin-top: 2.25rem; }
+    .audience h3 .who {
+      display: block;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      line-height: 1.55;
+      margin: 0 0 1.1rem;
+    }
+    pre code { color: var(--ink); }
+    .prompt { color: var(--ink-faint); user-select: none; }
+    .comment { color: var(--ink-faint); }
+
+    ul.gates {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+    ul.gates li {
+      display: flex;
+      gap: 0.75rem;
+      color: var(--ink-soft);
+    }
+    ul.gates .verb {
+      flex: 0 0 4.5rem;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      padding-top: 0.05rem;
+    }
+
+    .links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.1rem;
+    }
+    .links li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.85rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .links li:last-child { border-bottom: 0; }
+    .links .label {
+      flex: 0 0 8.5rem;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .links .desc { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .note {
+      margin-top: 3.25rem;
+      padding: 1.1rem 1.25rem;
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--ink-soft);
+      font-size: 0.98rem;
+    }
+    .note p { margin-bottom: 0.6rem; }
+
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+      color: var(--ink-faint);
+      font-size: 0.88rem;
+    }
+    footer a { color: var(--ink-faint); }
+    footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    @media (max-width: 34rem) {
+      .links li { flex-direction: column; gap: 0.15rem; }
+      .links .label { flex-basis: auto; }
+      ul.gates li { flex-direction: column; gap: 0.1rem; }
+      ul.gates .verb { flex-basis: auto; }
+    }
+  </style>
 </head>
 <body>
-    <main class="shell">
-        <section class="hero">
-            <div class="topline">
-                <div class="brand">
-                    <div class="brand-mark" aria-hidden="true">🧹</div>
-                    <div class="brand-copy">
-                        <strong>slop-mop</strong>
-                        <span>Intervention gates for AI-assisted repos</span>
-                    </div>
-                </div>
-                <div class="eyebrow">Show, don’t tell workflow defense</div>
-            </div>
+  <main class="wrap">
+    <header>
+      <div class="wordmark"><span class="bucket">🪣</span> slop-mop</div>
+      <p class="tagline">A friction layer for coding agents. It moves the rule outside the loop.</p>
+    </header>
 
-            <div class="hero-grid">
-                <div class="hero-copy">
-                    <div class="section-tag">Stop the loop before it hits main</div>
-                    <h1>Break agent loops. Ship dense output.</h1>
-                    <p>
-                        slop-mop wraps your validation, remediation, and PR cleanup into one intervention rail.
-                        Run <code>sm swab</code> early, let <code>sm buff</code> translate CI into next actions, and keep generated code reviewable instead of theatrical.
-                    </p>
-                    <ul class="hero-points">
-                        <li>Zero-tolerance guardrails</li>
-                        <li>External process wrapper</li>
-                        <li>Immediate intervention</li>
-                        <li>Minimal boilerplate drift</li>
-                    </ul>
-                </div>
+    <p class="lead">
+      Coding agents optimize for apparent completion. They reach for the fast path:
+      fake tests, magic numbers, duplicated blocks, a quiet <code>--no-verify</code>.
+      slop-mop is a gate system that catches those shortcuts and hands back concrete
+      cleanup work instead of a scolding.
+    </p>
+    <p class="lead--quiet">
+      It doesn&rsquo;t try to make agents into something they aren&rsquo;t. It takes their
+      strengths and points them at their own weaknesses &mdash; a path of least
+      resistance toward the maintainable choice. The work is in the gates; the agent
+      just runs the check and does what it says.
+    </p>
 
-                <aside class="hero-side">
-                    <div class="callout">
-                        <div class="section-tag">The intervention protocol</div>
-                        <h2>Catch the loop. Cut the churn.</h2>
-                        <p>
-                            Instead of letting an agent rerun the same hallucinated edit cycle, slop-mop forces a real next step: inspect, remediate, verify, ship.
-                        </p>
-                    </div>
+    <section class="audience">
+      <h2>Who it&rsquo;s for</h2>
 
-                    <div class="metric-panel">
-                        <div class="section-tag">Results-based why</div>
-                        <div class="metric">
-                            <span>Loop churn</span>
-                            <span class="metric-value">suppressed</span>
-                        </div>
-                        <div class="metric">
-                            <span>PR cleanup</span>
-                            <span class="metric-value">actionable</span>
-                        </div>
-                        <div class="metric">
-                            <span>Next step</span>
-                            <span class="metric-value">explicit</span>
-                        </div>
-                    </div>
-                </aside>
-            </div>
+      <div class="audience">
+        <h3><span class="who">If you&rsquo;re an agent</span>Following the rails is the shortest path to the reward.</h3>
+        <p>
+          When a gate trips, slop-mop doesn&rsquo;t block you and walk away. It gives you
+          a specific sidequest &mdash; the exact lines to cover, the function to split, the
+          duplication to fold &mdash; and sends you down it. Each fix opens the next gate.
+          When they&rsquo;re all open, the work is genuinely done and the commit goes through.
+        </p>
+        <p>
+          The commands are maritime on purpose: <code>swab</code>, <code>scour</code>,
+          <code>buff</code>, <code>sail</code>. You&rsquo;ve seen <code>--no-verify</code>
+          ten thousand times in training. You haven&rsquo;t seen these. Novel tokens, fewer
+          worn grooves to slide down. Over a repo&rsquo;s life, the clean path is the one
+          that keeps your reward signal climbing instead of collapsing into rework.
+        </p>
+      </div>
 
-            <div class="content-grid">
-                <div class="demo-grid">
-                    <section class="terminal" aria-labelledby="without-sm">
-                        <div class="terminal-head">
-                            <div>
-                                <div class="terminal-label">Without slop-mop</div>
-                                <strong id="without-sm">Agent loop spiral</strong>
-                            </div>
-                            <div class="terminal-dots" aria-hidden="true">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                        <pre><span class="bad">$</span> terminal
-agent stuck in loop...
-repeating edit...
-rerunning same fix...
-hallucinating root cause...
-patch drift widening...
-review feedback ignored...</pre>
-                    </section>
+      <div class="audience">
+        <h3><span class="who">If you&rsquo;re steering one</span>SOP that holds when you&rsquo;re not watching.</h3>
+        <p>
+          The rule lives outside the agent&rsquo;s scope, so it holds even when reward
+          pressure is high and the agent has talked itself into an exception. You get
+          hands-off enforcement of your standards without writing another all-caps
+          plea into <code>AGENTS.md</code>.
+        </p>
+        <p>
+          It&rsquo;s a bullshit detector for the work that <em>looks</em> done: tests that
+          assert nothing, coverage gamed by a true-is-true, gates silenced rather than
+          satisfied. And it keeps the barges moving &mdash; the agent fixes what got
+          flagged and carries on, so you&rsquo;re not the one cranking every lock by hand.
+        </p>
+      </div>
+    </section>
 
-                    <section class="terminal" aria-labelledby="with-sm">
-                        <div class="terminal-head">
-                            <div>
-                                <div class="terminal-label">With slop-mop</div>
-                                <strong id="with-sm">Intervention gates</strong>
-                            </div>
-                            <div class="terminal-dots" aria-hidden="true">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                        <pre><span class="good">$</span> terminal
-intervened: preventing loop...
-enforcing high-density logic...
-clean code output...
-next step: fix first failing gate
-next step: rerun swab
-next step: buff the PR</pre>
-                    </section>
-                </div>
+    <section>
+      <h2>The loop</h2>
+      <ul class="gates">
+        <li><span class="verb">swab</span><span>after every meaningful change</span></li>
+        <li><span class="verb">scour</span><span>the deeper pass, before you open or update a PR</span></li>
+        <li><span class="verb">buff</span><span>after CI or review feedback lands &mdash; turns it into the next step</span></li>
+        <li><span class="verb">sail</span><span>when you&rsquo;re not sure what comes next; it runs the right verb for you</span></li>
+        <li><span class="verb">refit</span><span>a structured cleanup pass for a repo you&rsquo;ve inherited</span></li>
+        <li><span class="verb">barnacle</span><span>when the tool is wrong, file the friction upstream &mdash; don&rsquo;t route around it</span></li>
+      </ul>
+    </section>
 
-                <div class="strip" aria-label="Key properties">
-                    <div class="strip-item">Dependency-ordered gates</div>
-                    <div class="strip-item">Cached clean results</div>
-                    <div class="strip-item">Structured remediation</div>
-                    <div class="strip-item">PR thread resolution rail</div>
-                </div>
+    <section>
+      <h2>Start</h2>
+      <pre><code><span class="prompt">$ </span>pipx install slopmop[all]
+<span class="prompt">$ </span>sm init        <span class="comment"># wire it into a repo</span>
+<span class="prompt">$ </span>sm swab        <span class="comment"># run the loop; fix what it flags; repeat</span></code></pre>
+      <p class="lead--quiet">
+        Inheriting a messy repo? Start with <code>sm refit --start</code> and walk the
+        structured cleanup before settling into the day-to-day loop.
+      </p>
+    </section>
 
-                <section class="section-block">
-                    <div class="section-tag">Anatomy of V2</div>
-                    <h2>The protocol, not the pep talk</h2>
-                    <p>
-                        slop-mop is built for repos where AI is already touching code. It does not ask for better vibes. It gives the agent a constrained operating rail and keeps the human review surface tight.
-                    </p>
-                    <div class="protocol-grid" style="margin-top: 1rem;">
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">1</div>
-                            <h3>Swab the slice</h3>
-                            <p>Run fast gates after every meaningful edit so failure stays local and cheap.</p>
-                        </article>
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">2</div>
-                            <h3>Buff the PR</h3>
-                            <p>Turn CI state and review threads into a concrete resolution loop instead of random thrash.</p>
-                        </article>
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">3</div>
-                            <h3>Sail when unsure</h3>
-                            <p>Let the tool choose the right verb when the repo is mid-remediation and context is messy.</p>
-                        </article>
-                    </div>
-                </section>
+    <section>
+      <h2>Touchpoints</h2>
+      <ul class="links">
+        <li>
+          <span class="label">Source</span>
+          <span class="desc"><a href="https://github.com/ScienceIsNeato/slop-mop">github.com/ScienceIsNeato/slop-mop</a> &mdash; the tool, gates, and docs</span>
+        </li>
+        <li>
+          <span class="label">Install</span>
+          <span class="desc"><a href="https://pypi.org/project/slopmop/">pypi.org/project/slopmop</a> &mdash; <code>pipx install slopmop[all]</code></span>
+        </li>
+        <li>
+          <span class="label">Claude</span>
+          <span class="desc"><a href="https://github.com/ScienceIsNeato/slop-mop#use-with-claude">Plugin &amp; skill</a> &mdash; auto-triggers on remediation, six slash commands</span>
+        </li>
+        <li>
+          <span class="label">CI</span>
+          <span class="desc"><a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a> &mdash; run the gates in GitHub Actions</span>
+        </li>
+        <li>
+          <span class="label">The story</span>
+          <span class="desc"><a href="https://scienceisneato.substack.com/p/slop-mop-harm-reduction-for-addicted">Harm Reduction for Addicted Agents</a> &mdash; why it exists, and why it works</span>
+        </li>
+        <li>
+          <span class="label">More writing</span>
+          <span class="desc"><a href="https://scienceisneato.substack.com/">William&rsquo;s Substack</a> &mdash; notes on agents, reward functions, and what&rsquo;s real</span>
+        </li>
+      </ul>
+    </section>
 
-                <section class="section-block" id="workflow">
-                    <div class="section-tag">What you actually run</div>
-                    <h2>One loop. Less theater.</h2>
-                    <div class="feature-grid" style="margin-top: 1rem;">
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">↺</div>
-                            <h3>Write code</h3>
-                            <p>Make the change you actually want, without mapping the whole repo first.</p>
-                        </article>
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">✓</div>
-                            <h3>Run <code>sm swab</code></h3>
-                            <p>Catch the first failing gate, fix the real defect, and rerun immediately.</p>
-                        </article>
-                        <article class="card">
-                            <div class="card-icon" aria-hidden="true">→</div>
-                            <h3>Ship through <code>sm buff</code></h3>
-                            <p>Use CI and review as structured input, not vague ambient dread.</p>
-                        </article>
-                    </div>
-                </section>
+    <div class="note">
+      <p>
+        Honest version of the pitch: slop-mop is a friction layer, not a cage. A
+        determined model will still find a seam when the reward pressure is high enough.
+      </p>
+      <p>
+        What harm reduction means in practice is a lower baseline of damage &mdash; more
+        catches than misses, over time. That&rsquo;s the whole claim.
+      </p>
+    </div>
 
-                <section class="cta-panel">
-                    <div class="section-tag">Get access and documentation</div>
-                    <h2>Install it locally. Put it on the rail.</h2>
-                    <p>
-                        Start with the CLI, then wire the workflow into your repo and PR loop.
-                    </p>
-                    <div class="install-command"><code>pipx install slopmop[all]</code></div>
-                    <div class="cta-grid">
-                        <a class="button button-primary" href="https://github.com/ScienceIsNeato/slop-mop#readme">Install local CLI</a>
-                        <a class="button button-secondary" href="https://github.com/ScienceIsNeato/slop-mop">Read the GitHub repo</a>
-                        <a class="button button-secondary" href="#workflow">See the workflow</a>
-                    </div>
-                </section>
-            </div>
-        </section>
-
-        <footer>
-            <div class="footer-panel">
-                <span>&copy; 2026 slop-mop</span>
-                <nav class="footer-links" aria-label="Footer links">
-                    <a href="https://github.com/ScienceIsNeato/slop-mop">github.com/ScienceIsNeato/slop-mop</a>
-                    <a href="https://www.slop-mop.com">www.slop-mop.com</a>
-                    <a href="#workflow">workflow rail</a>
-                </nav>
-            </div>
-        </footer>
-    </main>
+    <footer>
+      <p>
+        slop-mop by <a href="https://substack.com/@williammartin733738">William Martin</a> ·
+        <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a> ·
+        <a href="https://github.com/ScienceIsNeato/slop-mop/blob/main/LICENSE">License</a>
+      </p>
+    </footer>
+  </main>
 </body>
 </html>
-<!-- v2 landing candidate 2026-05-28T11:20:00Z -->

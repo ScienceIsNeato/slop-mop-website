@@ -1,5 +1,5 @@
 name = "slop-mop-website"
 compatibility_date = "2026-05-01"
-pages_build_output_dir = "."
 
-# Static HTML site served from root directory
+[assets]
+directory = "."

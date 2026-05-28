@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "Custom domain wiring staged for the Worker site",
-    "direction": "Attach slop-mop.com and www to the deployed Worker once the Cloudflare zone and DNS side are ready",
-    "last_update": "2026-05-28T10:05:00Z"
+    "status": "V2 landing page ready for review",
+    "direction": "Get the new homepage through review and onto the live site",
+    "last_update": "2026-05-28T17:57:27Z"
   }
 }

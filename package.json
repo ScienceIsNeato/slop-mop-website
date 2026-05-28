@@ -6,7 +6,11 @@
     "dev": "npx http-server public",
     "build": "echo 'Static site assets live in public/'",
     "type-check": "echo 'No TypeScript'",
-    "start": "npx http-server public"
+    "start": "npx http-server public",
+    "deploy:app": "bash scripts/deploy_app.sh",
+    "deploy:app:status": "bash scripts/deploy_app.sh --status",
+    "deploy:app:stop": "bash scripts/deploy_app.sh --stop",
+    "deploy:app:logs": "bash scripts/deploy_app.sh --logs"
   },
   "devDependencies": {
     "wrangler": "^4.94.0"

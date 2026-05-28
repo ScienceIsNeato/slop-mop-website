@@ -3,3 +3,11 @@ compatibility_date = "2026-05-01"
 
 [assets]
 directory = "public"
+
+[[routes]]
+pattern = "slop-mop.com"
+custom_domain = true
+
+[[routes]]
+pattern = "www.slop-mop.com"
+custom_domain = true

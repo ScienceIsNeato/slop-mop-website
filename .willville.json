@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "Deploy debug after the asset-root failure",
-    "direction": "Get publishing clean by separating the public site files from the repo root so deploy-time temp files cannot be uploaded",
-    "last_update": "2026-05-28T09:20:00Z"
+    "status": "Custom domain wiring staged for the Worker site",
+    "direction": "Attach slop-mop.com and www to the deployed Worker once the Cloudflare zone and DNS side are ready",
+    "last_update": "2026-05-28T10:05:00Z"
   }
 }

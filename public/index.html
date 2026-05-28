@@ -3,13 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>slop-mop — a friction layer for coding agents</title>
-  <meta name="description" content="slop-mop is a gate system for coding agents. It catches the shortcuts they reach for and redirects them into real cleanup work. It works by moving the rule outside the loop." />
-  <meta property="og:title" content="slop-mop" />
-  <meta property="og:description" content="A friction layer for coding agents. Move the rule outside the loop." />
+  <title>slop-mop — code quality gate system for AI coding agents</title>
+  <meta name="description" content="slop-mop is a gate system for AI coding agents. It catches fake tests, dead code, silenced gates, and commit-hook bypasses — then hands back concrete cleanup work instead of a scolding. pipx install slopmop[all]" />
+  <meta name="keywords" content="slop-mop, slopmop, AI coding agent, code quality, gate system, Claude plugin, code review automation, LLM coding, agent guardrails, CI quality gates" />
+  <meta name="author" content="William Martin" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="slop-mop — code quality gates for AI coding agents" />
+  <meta property="og:description" content="Catches the shortcuts agents reach for — fake tests, silenced gates, commit-hook bypasses — and redirects them into real cleanup work. Moves the rule outside the loop." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.slop-mop.com/" />
+  <meta property="og:site_name" content="slop-mop" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/ScienceIsNeato/slop-mop/main/assets/heraldic_splash.png" />
+  <meta property="og:image:alt" content="slop-mop heraldic seal — weaponized mops outside the loop" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="slop-mop — code quality gates for AI coding agents" />
+  <meta name="twitter:description" content="Catches the shortcuts agents reach for and hands back concrete cleanup work. Moves the rule outside the loop." />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/ScienceIsNeato/slop-mop/main/assets/heraldic_splash.png" />
+
   <link rel="canonical" href="https://www.slop-mop.com/" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "slop-mop",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux, Windows",
+    "description": "A gate system for AI coding agents. Catches fake tests, dead code, silenced gates, and commit-hook bypasses — then hands back concrete cleanup work. Moves the rule outside the loop.",
+    "url": "https://www.slop-mop.com/",
+    "downloadUrl": "https://pypi.org/project/slopmop/",
+    "codeRepository": "https://github.com/ScienceIsNeato/slop-mop",
+    "author": {
+      "@type": "Person",
+      "name": "William Martin",
+      "url": "https://substack.com/@williammartin733738"
+    },
+    "license": "https://github.com/ScienceIsNeato/slop-mop/blob/main/LICENSE",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
   <style>
     :root {
       --paper: #f6f4ef;

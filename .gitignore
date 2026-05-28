@@ -8,3 +8,9 @@ node_modules/
 .cache/
 dist/
 build/
+
+# slop-mop working directory (machine-local state)
+.slopmop/
+.specstory/
+.vscode/
+local/

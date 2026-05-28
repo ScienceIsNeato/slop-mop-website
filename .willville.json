@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "V2 homepage PR up and ready for review",
-    "direction": "Get it merged and watch the new page go live",
-    "last_update": "2026-05-28T18:04:11Z"
+    "status": "V2 homepage PR refreshed with a local deploy helper",
+    "direction": "Get the branch merged and keep site previews on the shared deploy_app rail",
+    "last_update": "2026-05-28T18:26:09Z"
   }
 }

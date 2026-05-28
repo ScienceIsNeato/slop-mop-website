@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "V2 homepage PR refreshed with a local deploy helper",
-    "direction": "Get the branch merged and keep site previews on the shared deploy_app rail",
-    "last_update": "2026-05-28T18:26:09Z"
+    "status": "Scrapped the loud homepage for a calm one that actually explains what slop-mop is and who it's for",
+    "direction": "Get eyes on the new tone, then merge",
+    "last_update": "2026-05-28T19:05:00Z"
   }
 }

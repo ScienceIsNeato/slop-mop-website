@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "Initial swab clean after repo init",
-    "direction": "Roll the init config and deploy probe into a small PR, then verify main deploys cleanly",
-    "last_update": "2026-05-28T19:34:00Z"
+    "status": "Deploy debug after the auth fix",
+    "direction": "Get publishing clean by stopping CI from bundling local package installs into the site upload",
+    "last_update": "2026-05-28T09:10:00Z"
   }
 }

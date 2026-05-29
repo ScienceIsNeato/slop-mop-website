@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "Made the homepage read like a real tool page — install buttons up top, quick callouts, and a live terminal transcript of the rail catching and fixing slop",
-    "direction": "Get it reviewed and merged",
-    "last_update": "2026-05-28T20:10:00Z"
+    "status": "Homepage clips now play the full over-the-shoulder loop — agent thinks, runs the command, reacts to the result — including a meta clip of this very session getting steered straight",
+    "direction": "Tune clip pacing with Will, then commit the whole arc and open a PR",
+    "last_update": "2026-05-29T14:15:00Z"
   }
 }

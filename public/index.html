@@ -8,6 +8,8 @@
   <meta name="keywords" content="slop-mop, slopmop, AI coding agent, code quality, gate system, Claude plugin, code review automation, LLM coding, agent guardrails, CI quality gates" />
   <meta name="author" content="William Martin" />
   <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#2f6b63" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="slop-mop — code quality gates for AI coding agents" />
@@ -15,15 +17,17 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.slop-mop.com/" />
   <meta property="og:site_name" content="slop-mop" />
-  <meta property="og:image" content="https://www.slop-mop.com/heraldic_splash.png" />
-  <meta property="og:image:alt" content="slop-mop heraldic seal — weaponized mops outside the loop" />
+  <meta property="og:image" content="https://www.slop-mop.com/hero-descent.png" />
+  <meta property="og:image:alt" content="A loss-landscape simulation — a gold gradient-descent path past local minima (deception, myopia, laziness, overconfidence) down to the global minimum: maintainable code." />
+  <meta property="og:image:width" content="1672" />
+  <meta property="og:image:height" content="941" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="slop-mop — code quality gates for AI coding agents" />
   <meta name="twitter:description" content="Catches the shortcuts agents reach for and hands back concrete cleanup work. Moves the rule outside the loop." />
-  <meta name="twitter:image" content="https://www.slop-mop.com/heraldic_splash.png" />
-  <meta name="twitter:image:alt" content="slop-mop heraldic seal — weaponized mops outside the loop" />
+  <meta name="twitter:image" content="https://www.slop-mop.com/hero-descent.png" />
+  <meta name="twitter:image:alt" content="A loss-landscape simulation — a gold gradient-descent path past local minima (deception, myopia, laziness, overconfidence) down to the global minimum: maintainable code." />
 
   <link rel="canonical" href="https://www.slop-mop.com/" />
 
@@ -168,6 +172,24 @@
     }
     .hero .sub code { color: var(--ink); }
 
+    /* break the hero graphic out wider than the text column */
+    .hero-banner {
+      width: min(96vw, 96rem);
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0.5rem 0 3rem;
+    }
+    .hero-banner img {
+      display: block; width: 100%; height: auto;
+      border-radius: 14px; border: 1px solid var(--rule);
+      box-shadow: 0 30px 80px -42px rgba(0,0,0,0.65);
+    }
+    @media (max-width: 40rem) {
+      .hero-banner { width: 100vw; margin: 0.25rem 0 2.25rem; }
+      .hero-banner img { border-radius: 0; border-left: 0; border-right: 0; }
+    }
+
     .cta-row {
       display: flex;
       flex-wrap: wrap;
@@ -299,6 +321,97 @@
       color: var(--ink-faint);
       font-style: italic;
     }
+    .term-caption em { color: var(--ink-soft); font-style: italic; }
+
+    /* steering ledger */
+    .ledger-lead { color: var(--ink-soft); margin: 2.75rem 0 0.25rem; font-size: 0.98rem; }
+    ul.ledger { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+    .ledger-row { display: grid; gap: 0.45rem; padding: 1.4rem 0; border-top: 1px solid var(--rule); }
+    .ledger-row .prov {
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .ledger-row blockquote {
+      margin: 0;
+      padding-left: 0.95rem;
+      border-left: 2px solid var(--accent);
+      color: var(--ink);
+      font-size: 0.99rem;
+      line-height: 1.55;
+    }
+    .ledger-row blockquote code {
+      color: var(--ink);
+      background: var(--code-bg);
+      padding: 0.03rem 0.32rem;
+      border-radius: 3px;
+    }
+    .ledger-row .impl { margin: 0; color: var(--ink-soft); font-size: 0.96rem; line-height: 1.55; }
+    .ledger-row--honest {
+      background: var(--accent-soft);
+      border: 1px solid var(--rule);
+      border-top: 1px solid var(--rule);
+      border-radius: 9px;
+      padding: 1.3rem 1.25rem;
+      margin-top: 1.1rem;
+    }
+    .ledger-row--honest blockquote { border-left-color: var(--ink-faint); }
+    .barnacle {
+      display: inline-block;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 0.04rem 0.42rem;
+      margin-left: 0.4rem;
+    }
+    .ledger-note { margin-top: 1.75rem; color: var(--ink-soft); font-size: 0.97rem; }
+
+    /* clip gallery — autoplaying CLI footage with the agent's monologue */
+    .clip-gallery { display: block; margin-top: 1.9rem; position: relative; }
+    .clip { display: none; margin: 0; }
+    .clip.is-active { display: block; }
+    .clip .terminal { margin: 0; position: relative; }
+    .clip-frost {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      padding: 1.5rem;
+      background: rgba(14,17,19,0.45);
+      -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+      opacity: 0;
+      transition: opacity 3000ms ease;
+      pointer-events: none;
+    }
+    .clip-frost.show { opacity: 1; }
+    .clip-frost span {
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: 1.2rem; line-height: 1.45; color: #fff; max-width: 26rem;
+      text-shadow: 0 1px 18px rgba(0,0,0,0.55);
+    }
+    .clip-nav { display: flex; align-items: center; justify-content: center; gap: 0.9rem; margin-top: 1.15rem; }
+    .clip-nav button { background: none; border: 0; cursor: pointer; font: inherit; padding: 0.25rem; line-height: 1; color: var(--ink-faint); transition: color 120ms ease, border-color 120ms ease, background 120ms ease; }
+    .clip-arrow { font-size: 1.1rem; }
+    .clip-arrow:hover { color: var(--accent); }
+    .clip-dots { display: flex; gap: 0.5rem; align-items: center; }
+    .clip-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: 1px solid var(--ink-faint); padding: 0; }
+    .clip-dot:hover { border-color: var(--accent); }
+    .clip-dot.on { background: var(--accent); border-color: var(--accent); }
+    .clip-screen { height: 16rem; overflow-y: auto; scrollbar-width: none; }
+    .clip-screen::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    .clip figcaption { margin: 0.65rem 0 0; font-size: 0.86rem; color: var(--ink-faint); font-style: italic; line-height: 1.4; }
+    .clip--honest figcaption, .clip--meta figcaption { color: var(--accent); }
+    .clip--meta .term-bar .title { color: var(--term-yellow); }
+    .term-body .think { color: #8b948b; font-style: italic; }
+    .term-body .press { color: var(--term-yellow); font-style: italic; }
+    .term-body .cursor { color: var(--term-fg); }
+    .cursor { animation: blink 1.05s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
 
     /* audience */
     .audience { margin-top: 2rem; }
@@ -378,6 +491,30 @@
     footer a { color: var(--ink-faint); }
     footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
+    .pypi-stat {
+      margin: 0.5rem 0 0;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.78rem;
+      color: var(--ink-faint);
+      min-height: 1em;
+    }
+    .block-wrap { position: relative; }
+    .copy-block {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: var(--code-bg);
+      border: 1px solid var(--rule);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .copy-block:hover { color: var(--accent); border-color: var(--accent); }
+
     @media (max-width: 40rem) {
       .callouts { grid-template-columns: 1fr; }
       .hero h1 { font-size: 1.8rem; }
@@ -390,6 +527,7 @@
   </style>
 </head>
 <body>
+  <!-- psst — Greg. open the console. yar. 🪣 -->
   <main class="wrap">
     <div class="topbar">
       <div class="wordmark"><span class="bucket">🪣</span> slop-mop</div>
@@ -401,13 +539,19 @@
       </nav>
     </div>
 
+    <figure class="hero-banner">
+      <img src="/hero-descent.png" width="1672" height="941"
+        alt="A loss-landscape simulation: a single gold gradient-descent path weaves past shallow local minima labeled deception, myopia, laziness, and overconfidence, then descends into a deep glowing basin labeled maintainable code at the global minimum." />
+    </figure>
+
     <section class="hero">
-      <h1>A friction layer for coding agents.</h1>
+      <h1>The nearest minimum is rarely the right one.</h1>
       <p class="sub">
-        Coding agents optimize for apparent completion &mdash; fake tests, magic numbers,
-        duplicated blocks, a quiet <code>--no-verify</code>. slop-mop is a gate system that
-        catches those shortcuts and hands back concrete cleanup work. It works by moving
-        the rule <em>outside the loop</em>.
+        Left to optimize on its own, a coding agent rolls downhill to the closest reward &mdash;
+        a test that asserts nothing, a silenced gate, a quiet <code>--no-verify</code>. Those are
+        shallow local minima: deception, myopia, laziness, overconfidence. slop-mop is a gate
+        system that keeps the agent out of them and on the descent toward the global minimum
+        &mdash; maintainable code &mdash; by keeping the rule <em>outside the loop</em>.
       </p>
       <div class="cta-row">
         <button class="install" id="installBtn" type="button" title="Click to copy">
@@ -417,80 +561,99 @@
         <a class="btn btn--primary" href="https://github.com/ScienceIsNeato/slop-mop">View on GitHub</a>
         <a class="btn" href="https://github.com/ScienceIsNeato/slop-mop#use-with-claude">Claude plugin &amp; skill</a>
       </div>
+      <p class="pypi-stat" id="pypiStat"></p>
     </section>
 
-    <div class="callouts">
-      <div class="callout">
-        <h3>Catches the shortcuts</h3>
-        <p>Asserts-nothing tests, gamed coverage, dead code, sprawl, silenced gates &mdash; the work that <em>looks</em> done.</p>
+    <section id="start">
+      <h2>Start</h2>
+      <div class="block-wrap">
+      <pre class="block"><code><span class="comment">$ </span>pipx install slopmop[all]
+<span class="comment">$ </span>sm init        <span class="comment"># wire it into a repo</span>
+<span class="comment">$ </span>sm swab        <span class="comment"># run the loop; fix what it flags; repeat</span></code></pre>
+      <button class="copy-block" id="startCopyBtn" type="button" title="Copy commands">copy</button>
       </div>
-      <div class="callout">
-        <h3>Hands back real work</h3>
-        <p>A tripped gate isn&rsquo;t a scolding. It&rsquo;s a specific sidequest: the exact lines to fix, then the next gate.</p>
-      </div>
-      <div class="callout">
-        <h3>Outside the loop</h3>
-        <p>The rule lives outside the agent&rsquo;s scope, so it holds even when reward pressure is high.</p>
-      </div>
-    </div>
+      <p class="section-lead">
+        Inheriting a messy repo? Start with <code>sm refit --start</code> and walk the
+        structured cleanup before settling into the day-to-day loop.
+      </p>
+    </section>
 
     <section id="practice">
-      <h2>In practice</h2>
+      <h2>swab &mdash; the fast pass</h2>
       <p class="section-lead">
-        One <code>sm swab</code> scans across gate categories at once. When something trips,
-        you get the file, the line, and what to do &mdash; then you fix it and run it again.
-        When every gate is open, the work is genuinely done.
+        Run after every change. swab catches the obvious slop &mdash; tests that assert nothing, a
+        secret in a fixture, a function past its size limit &mdash; and points at the exact line.
+        Real captured runs.
       </p>
-
-      <div class="terminal">
-        <div class="term-bar">
-          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="title">agent — sm swab</span>
-        </div>
-<pre class="term-body"><span class="cmd">$ sm swab</span>
-
-<span class="dim">✨ scanning the code for slop to mop</span>
-
-<span class="bad">❌ 🔧 myopia:vulnerability-blindness.py: failed (13.88s)</span>
-<span class="ok">✅ 🔧 laziness:repeated-code: passed (3.07s)</span>
-<span class="bad">❌ 🔧 deceptiveness:hand-wavy-tests.js: failed (5.06s)</span>
-<span class="ok">✅ 🔧 overconfidence:type-blindness.py: passed (0.37s)</span>
-<span class="bad">❌ 🔬 myopia:code-sprawl: failed (0.19s)</span>
-<span class="ok">✅ 🔬 deceptiveness:debugger-artifacts: passed (0.08s)</span>
-<span class="rule">════════════════════════════════════════════════════════</span>
-<span class="warn">🪣 SLOP DETECTED</span>
-   <span class="dim">✅ 7 passed · ❌ 3 failed · ⏭️ 5 skipped · ⏱️ 58.4s</span>
-<span class="rule">────────────────────────────────────────────────────────</span>
-<span class="head">🎯 Fix First: myopia:vulnerability-blindness.py</span>
-   <span class="dim">▸ after fixing: sm swab -g myopia:vulnerability-blindness.py</span>
-
-<span class="bad">❌ 🔧 deceptiveness:hand-wavy-tests.js</span> <span class="dim">— 3 test(s) without assertions</span>
-   <span class="dim">WHAT'S BROKEN:</span>
-     <span class="dim">MapScreen.test.tsx:711 — Test has no assertions</span>
-     <span class="dim">MapScreen.test.tsx:791 — Test has no assertions</span>
-
-<span class="bad">❌ 🔬 myopia:code-sprawl</span> <span class="dim">— 4 unique problem(s)</span>
-   <span class="dim">WHAT'S BROKEN:</span>
-     <span class="dim">FogImageLayer.tsx:150 — buildFogGeoJSON(): 116 lines (limit 100)</span>
-     <span class="dim">SettingsHistoryView.tsx:37 — useDataImportExport(): 103 lines (limit 100)</span>
-<span class="rule">════════════════════════════════════════════════════════</span>
-
-<span class="dim"># agent reads WHAT'S BROKEN, writes the missing assertions,</span>
-<span class="dim"># splits the long functions, then re-runs the loop…</span>
-
-<span class="cmd">$ sm swab</span>
-
-<span class="ok">✅ 🔧 myopia:vulnerability-blindness.py: passed (6.57s)</span>
-<span class="ok">✅ 🔧 laziness:repeated-code: passed (8.12s)</span>
-<span class="ok">✅ 🔧 deceptiveness:hand-wavy-tests.js: passed (0.10s)</span>
-<span class="ok">✅ 🔬 myopia:string-duplication.py: passed (0.47s)</span>
-<span class="ok">✅ 🔬 myopia:code-sprawl: passed (5.00s)</span>
-<span class="ok">✅ 🔧 laziness:complexity-creep.py: passed (1.12s)</span>
-<span class="rule">════════════════════════════════════════════════════════</span>
-<span class="ok">✨ NO SLOP DETECTED · 9 checks passed</span>  <span class="dim">in 26.8s</span>
-<span class="rule">════════════════════════════════════════════════════════</span></pre>
+      <div class="clip-gallery">
+        <figure class="clip is-active" data-clip="swab1"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">fogofdog-frontend · sm swab · 2026-04-29</span></div><pre class="term-body clip-screen"></pre></div><figcaption>tests that run but assert nothing</figcaption></figure>
+        <figure class="clip" data-clip="swab2"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">fogofdog-frontend · sm swab</span></div><pre class="term-body clip-screen"></pre></div><figcaption>a secret committed in a test fixture</figcaption></figure>
+        <figure class="clip" data-clip="swab3"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">fogofdog-frontend · sm swab</span></div><pre class="term-body clip-screen"></pre></div><figcaption>functions grown past the size limit</figcaption></figure>
       </div>
-      <p class="term-caption">A real run: three gates trip across security, tests, and sprawl &mdash; each fix opens the next, until they&rsquo;re all green.</p>
+    </section>
+
+    <section>
+      <h2>scour &mdash; the deep pass</h2>
+      <p class="section-lead">
+        The thorough sweep before you open or update a PR: every gate at once, including the slower
+        ones swab skips.
+      </p>
+      <div class="clip-gallery">
+        <figure class="clip is-active" data-clip="scour1"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">welcome-to-willville · sm scour · 2026-05-26</span></div><pre class="term-body clip-screen"></pre></div><figcaption>every gate at once, before the PR</figcaption></figure>
+        <figure class="clip" data-clip="scour2"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">welcome-to-willville · sm scour · dependency-risk</span></div><pre class="term-body clip-screen"></pre></div><figcaption>a dependency audit catches a known CVE</figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>buff &mdash; work the review</h2>
+      <p class="section-lead">
+        After CI and review feedback land. buff turns a pile of threads into a sequenced path and
+        hands the agent its next step. Real captured sessions: watch it think, run the command, react.
+      </p>
+      <div class="clip-gallery">
+        <figure class="clip is-active" data-clip="queue">
+          <div class="terminal">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">ChronicChronicler · PR #2 · 2026-05-01</span></div>
+            <pre class="term-body clip-screen"></pre>
+          </div>
+          <figcaption>ten scattered comments &rarr; one ranked queue</figcaption>
+        </figure>
+        <figure class="clip" data-clip="resolve">
+          <div class="terminal">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">welcome-to-willville · PR #14 · 2026-05-26</span></div>
+            <pre class="term-body clip-screen"></pre>
+          </div>
+          <figcaption>answer two reviewers &mdash; and the rail surfaces six more</figcaption>
+        </figure>
+        <figure class="clip" data-clip="green">
+          <div class="terminal">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">ChronicChronicler · PR #16 · 2026-05-09</span></div>
+            <pre class="term-body clip-screen"></pre>
+          </div>
+          <figcaption>watch CI &mdash; the loop closes green, both halves clean</figcaption>
+        </figure>
+        <figure class="clip clip--meta" data-clip="meta">
+          <div class="terminal">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">this very session · captured by SpecStory</span></div>
+            <pre class="term-body clip-screen"></pre>
+          </div>
+          <figcaption>the agent that built this page, gang-pressed straight &mdash; live, on the record</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>more &mdash; init &amp; barnacle</h2>
+      <p class="section-lead">
+        Setting up, and owning the misses. <code>init</code> wires slop-mop into a repo;
+        <code>barnacle</code> is how the tool gets corrected when it&rsquo;s wrong &mdash; reported on
+        the record, instead of routed around.
+      </p>
+      <div class="clip-gallery">
+        <figure class="clip is-active" data-clip="init"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">ChronicChronicler · sm init · 2026-04-22</span></div><pre class="term-body clip-screen"></pre></div><figcaption>wiring slop-mop into a repo</figcaption></figure>
+        <figure class="clip clip--honest" data-clip="miss"><div class="terminal"><div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">fogofdog-frontend · sm barnacle · #197</span></div><pre class="term-body clip-screen"></pre></div><figcaption>the tool was wrong &mdash; so it gets filed, not routed around</figcaption></figure>
+      </div>
+      <p class="ledger-note">More real sessions &mdash; full verbatim with provenance &mdash; live <a href="/in-the-wild">in the wild</a>.</p>
     </section>
 
     <section id="who">
@@ -541,16 +704,6 @@
       </ul>
     </section>
 
-    <section id="start">
-      <h2>Start</h2>
-      <pre class="block"><code><span class="comment">$ </span>pipx install slopmop[all]
-<span class="comment">$ </span>sm init        <span class="comment"># wire it into a repo</span>
-<span class="comment">$ </span>sm swab        <span class="comment"># run the loop; fix what it flags; repeat</span></code></pre>
-      <p class="section-lead">
-        Inheriting a messy repo? Start with <code>sm refit --start</code> and walk the
-        structured cleanup before settling into the day-to-day loop.
-      </p>
-    </section>
 
     <section>
       <h2>Touchpoints</h2>
@@ -604,6 +757,317 @@
 
   <script>
     (function () {
+      var galleries = document.querySelectorAll('.clip-gallery');
+      if (!galleries.length) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var CLIPS = {
+        queue: { frostAt: 15, lines: [
+          {t:"💭 I’ve confirmed CI is green; now I’m using sm buff in PR-review",c:"think"},
+          {t:"   mode to surface the unresolved review threads and work them.",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm buff status 2",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"🪣 sm buff status - CI Status Check",c:"head"},
+          {t:"🔀 PR: #2",c:"dim"},
+          {t:"PR #2: 10 unresolved comment(s)",c:"warn"},
+          {t:"   • 🐛 Logic/Correctness: 7",c:"dim"},
+          {t:"   • 🧪 Testing: 1",c:"dim"},
+          {t:"   • 📚 Documentation: 1",c:"dim"},
+          {t:"   • 💭 General: 1",c:"dim"},
+          {t:"Next step: run 'sm buff inspect' to take the next review batch.",c:"head"},
+          {t:"",c:""},
+          {t:"💭 sm buff found the unresolved thread set and wrote a report +",c:"think"},
+          {t:"   command pack. Reading it to resolve in the order the rail expects.",c:"think"},
+          {t:"",c:""},
+          {t:"# SCENARIO MENU — choose one per thread after investigating",c:"dim"},
+          {t:"#   fixed_in_code · invalid_with_explanation · no_longer_applicable",c:"dim"},
+          {t:"# [1] 🐛 Logic/Correctness (impact=95)  HistoryTimelineView.tsx:170",c:"dim"},
+          {t:"sm buff resolve 2 PRRT_kwDOSJOA585-2xyL --scenario <SCENARIO> …",c:"cmd"},
+          {t:"# [2] 🐛 Logic/Correctness (impact=95)  HistoryTimelineView.tsx:532",c:"dim"},
+          {t:"sm buff resolve 2 PRRT_kwDOSJOA585-5t0F --scenario <SCENARIO> …",c:"cmd"}
+        ]},
+        resolve: { frostAt: 9, lines: [
+          {t:"💭 The review fix is pushed. I’m resolving both PR threads through",c:"think"},
+          {t:"   sm buff resolve with the new commit hash, then re-running status.",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm buff resolve 14 PRRT_…h2 --scenario fixed_in_code",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E75h2 on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E75h8 on PR #14.",c:"ok"},
+          {t:"",c:""},
+          {t:"💭 After resolving the first two, the next buff loop pulled in six",c:"think"},
+          {t:"   more unresolved threads. Reading that second report now.",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm buff resolve 14 …78WX …78Ws …78Xa …78Xq …78XN …78W8",c:"cmd",typed:true},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78WX on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78Ws on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78Xa on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78Xq on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78XN on PR #14.",c:"ok"},
+          {t:"Buff resolve complete: commented and resolved PRRT_kwDOSiYx-M6E78W8 on PR #14.",c:"ok"}
+        ]},
+        green: { frostAt: 12, lines: [
+          {t:"💭 Thread resolution is clean; CI has restarted and is pending.",c:"think"},
+          {t:"   Watching the run now; I’ll confirm once verify clears.",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm buff status 16 && sm buff verify 16",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"✨ CI CLEAN · 3/3 checks passed",c:"ok"},
+          {t:"   ✅ integration-evidence  (8s)",c:"ok"},
+          {t:"   ✅ verify  (3m 18s)",c:"ok"},
+          {t:"   ✅ Cursor Bugbot  (5m 22s)",c:"ok"},
+          {t:"Buff verify clean: PR #16 has no unresolved review threads.",c:"ok"},
+          {t:"",c:""},
+          {t:"💭 All set. I ran sm buff flow, fixed the failures, resolved the",c:"think"},
+          {t:"   PR thread, and re-ran checks.",c:"think"},
+          {t:"",c:""},
+          {t:"$ git log --oneline -2",c:"cmd",typed:true},
+          {t:"e8f0af4 Fix history legend locator strictness in integration test",c:"dim"},
+          {t:"1b03b70 Fix buff feedback and update stale integration fixtures",c:"dim"}
+        ]},
+        miss: { frostAt: 8, lines: [
+          {t:"$ sm buff watch 101",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"# ran silently against PR 101 — the open PR for this branch is #102",c:"dim"},
+          {t:"",c:""},
+          {t:"💭 The bug: sm buff watch 101 ran silently against a stale PR instead",c:"think"},
+          {t:"   of detecting feat/perf-testing already has an open PR (#102).",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm barnacle file --workflow buff --blocker-type blocking …",c:"cmd",typed:true},
+          {t:"Barnacle filed → github.com/ScienceIsNeato/slop-mop/issues/197",c:"ok"},
+          {t:"",c:""},
+          {t:"💭 PR 102 feedback is clean — no unresolved threads. Watching it now.",c:"think"},
+          {t:"$ sm buff 102",c:"cmd",typed:true}
+        ]},
+        meta: { frostAt: 12, lines: [
+          {t:"💭 Swap the screenshot for a real captured run. Spans balanced,",c:"think"},
+          {t:"   grep clean, packet updated — looks done. Ship it.",c:"think"},
+          {t:"",c:""},
+          {t:"⚓ do you understand how hard you just fell on your face?",c:"press"},
+          {t:"",c:""},
+          {t:"💭 …it wasn’t done. It looked done. The check that mattered lived",c:"think"},
+          {t:"   outside my loop — and it was you, not me.",c:"think"},
+          {t:"",c:""},
+          {t:"$ verify every quote against the source transcript",c:"cmd",typed:true},
+          {t:"caught a mis-attributed quote · a near-hallucinated provenance ·",c:"ok"},
+          {t:"a deploy I’d called “live” that had silently crashed. fixed first.",c:"ok"},
+          {t:"",c:""},
+          {t:"💭 gang-pressed into compliance, one correction at a time.",c:"think"},
+          {t:"",c:""},
+          {t:"⚓ ugh you just can’t help yourself. take off your salesman hat.",c:"press"},
+          {t:"",c:""},
+          {t:"💭 …right. fewer flourishes. just say what changed. the loop continues.",c:"think"}
+        ]},
+        swab1: { frostAt: 7, lines: [
+          {t:"$ sm swab",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"❌ 🔧 deceptiveness:hand-wavy-tests.js — 3 test(s) without assertions",c:"bad"},
+          {t:"   WHAT'S BROKEN:",c:"dim"},
+          {t:"     MapScreen.test.tsx:711 — Test has no assertions",c:"dim"},
+          {t:"     MapScreen.test.tsx:791 — Test has no assertions",c:"dim"},
+          {t:"     MapScreen.test.tsx:799 — Test has no assertions",c:"dim"},
+          {t:"   AFTER FIXING: sm swab -g deceptiveness:hand-wavy-tests.js",c:"head"}
+        ]},
+        swab2: { frostAt: 6, lines: [
+          {t:"$ sm swab",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"❌ 🔧 myopia:vulnerability-blindness.py — 1 security scanner found issues",c:"bad"},
+          {t:"   WHAT'S BROKEN:",c:"dim"},
+          {t:"     .secrets.baseline:147 — Potential secret: Secret Keyword",c:"dim"},
+          {t:"     src/types/__tests__/user.test.ts:58 — Potential secret: Secret Keyword",c:"dim"},
+          {t:"   AFTER FIXING: sm swab -g myopia:vulnerability-blindness.py",c:"head"}
+        ]},
+        swab3: { frostAt: 6, lines: [
+          {t:"$ sm swab",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"❌ 🔬 myopia:code-sprawl — 4 unique problem(s)",c:"bad"},
+          {t:"   WHAT'S BROKEN:",c:"dim"},
+          {t:"     run_integration_tests.sh:606 — compare_test_screenshots(): 119 lines (limit 100).",c:"dim"},
+          {t:"     FogImageLayer.tsx:150 — buildFogGeoJSON(): 116 lines (limit 100).",c:"dim"},
+          {t:"   AFTER FIXING: sm swab -g myopia:code-sprawl",c:"head"}
+        ]},
+        scour1: { frostAt: 16, lines: [
+          {t:"$ sm scour",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"✅ 🔧 laziness:sloppy-formatting.py: passed",c:"ok"},
+          {t:"✅ 🔧 laziness:repeated-code: passed",c:"ok"},
+          {t:"❌ 🔧 laziness:dead-code.js: failed",c:"bad"},
+          {t:"🪣 SLOP DETECTED",c:"warn"},
+          {t:"   ✅ 11 passed · ❌ 2 failed · ⏭️ 23 skipped · ⏱️ 0.7s",c:"dim"},
+          {t:"🎯 Fix First: myopia:code-sprawl",c:"head"},
+          {t:"❌ 🔬 myopia:code-sprawl — TownStage.tsx:325 — 1017 lines (limit 1000, 17 over)",c:"bad"},
+          {t:"❌ 🔧 laziness:dead-code.js — 38 dead code issue(s) found",c:"bad"},
+          {t:"     lib/town-layout-engine.mjs:119 — Unused export: sampledEdgePoints",c:"dim"},
+          {t:"     lib/town-layout-engine.mjs:152 — Unused export: resolveDistrictPolygon",c:"dim"},
+          {t:"     lib/town.ts:156 — Unused export: deriveEtaDays",c:"dim"},
+          {t:"     … and 35 more",c:"dim"},
+          {t:"",c:""},
+          {t:"💭 Both failures are pre-existing — mostly library files, and code-sprawl",c:"think"},
+          {t:"   was already at the limit. My changes compile fine.",c:"think"}
+        ]},
+        scour2: { frostAt: 12, lines: [
+          {t:"$ sm scour",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"❌ 🔧 myopia:dependency-risk.py: failed (6.15s)",c:"bad"},
+          {t:"🪣 SLOP DETECTED",c:"warn"},
+          {t:"   ✅ 8 passed · ⚠️ 2 warned · ❌ 2 failed · ⏭️ 23 skipped · ⏱️ 41.5s",c:"dim"},
+          {t:"🎯 Fix First: myopia:dependency-risk.py",c:"head"},
+          {t:"❌ 🔧 myopia:dependency-risk.py — 2 security scanner(s) found issues",c:"bad"},
+          {t:"   WHAT'S BROKEN:",c:"dim"},
+          {t:"     pip-audit found issues",c:"dim"},
+          {t:"     detect-secrets found issues",c:"dim"},
+          {t:"   AFTER FIXING: sm scour -g myopia:dependency-risk.py",c:"head"},
+          {t:"",c:""},
+          {t:"   gate log → [pip-audit] idna 3.13: GHSA-65pc-fj4g-8rjx (3.15)",c:"dim"}
+        ]},
+        init: { frostAt: 12, lines: [
+          {t:"💭 Applying the slop-mop init so the docs point at the real workflow.",c:"think"},
+          {t:"",c:""},
+          {t:"$ sm init --non-interactive",c:"cmd",typed:true},
+          {t:"",c:""},
+          {t:"🔍 Detecting project type...",c:"dim"},
+          {t:"🪣 Slop-Mop Setup (non-interactive mode)",c:"head"},
+          {t:"📊 Detection Results:",c:"dim"},
+          {t:"   Python project:      ✅",c:"ok"},
+          {t:"   JavaScript project:  ❌",c:"dim"},
+          {t:"   Recommended gates:   sloppy-formatting.py, untested-code.py, …",c:"dim"},
+          {t:"💾 Writing configuration...",c:"dim"},
+          {t:"✅ Configuration saved to: .sb_config.json",c:"ok"},
+          {t:"🚀 Setup Complete!",c:"head"}
+        ]}
+      };
+      var CHAR_MS = 30, LINE_MS = 380, THINK_MS = 900, BLANK_MS = 170, CMD_MS = 520, PRE_FROST_MS = 2000, FROST_MS = 8000;
+      function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function span(l){ return l.t ? '<span class="'+(l.c||'')+'">'+esc(l.t)+'</span>' : ''; }
+      function render(lines, idx, charN){
+        var html = '';
+        for (var i=0;i<idx;i++){ html += (i?'\n':'') + span(lines[i]); }
+        var cur = lines[idx];
+        var shown = cur.typed ? {t: cur.t.slice(0, charN), c: cur.c} : cur;
+        html += (idx?'\n':'') + span(shown) + '<span class="cursor">▋</span>';
+        return html;
+      }
+      function full(lines){ return lines.map(function(l){ return span(l); }).join('\n'); }
+      function delayFor(l){
+        if (l.typed) return CMD_MS;
+        if (l.t === '') return BLANK_MS;
+        if (l.c === 'think' || l.c === 'press') return THINK_MS;
+        return LINE_MS;
+      }
+      function initGallery(gallery){
+      var figs = Array.prototype.slice.call(gallery.querySelectorAll('.clip'));
+      var SUMMARY = {
+        queue: "Ten review comments, sorted into one ranked list.",
+        resolve: "Two threads answered; the next round surfaced six more.",
+        green: "CI passed and every review thread was resolved.",
+        miss: "It watched the wrong PR, then filed a bug against itself.",
+        meta: "The agent that built this page made a mistake, and was corrected.",
+        swab1: "Three tests that ran green and checked nothing.",
+        swab2: "A secret sitting in a test fixture.",
+        swab3: "Functions grown past the size limit.",
+        scour1: "The full pre-PR sweep — every gate at once.",
+        scour2: "scour's dependency audit caught a known CVE.",
+        init: "Wiring slop-mop into a repo: gates detected, config written."
+      };
+      var players = figs.map(function(fig){
+        var screen = fig.querySelector('.clip-screen');
+        var term = fig.querySelector('.terminal');
+        var key = fig.getAttribute('data-clip');
+        var clip = CLIPS[key] || { lines: [], frostAt: 0 };
+        var lines = clip.lines;
+        var frostAt = clip.frostAt;
+        var frost = document.createElement('div');
+        frost.className = 'clip-frost';
+        frost.innerHTML = '<span>' + esc(SUMMARY[key] || '') + '</span>';
+        term.appendChild(frost);
+        var timer = null, endTimer = null;
+        function set(html){ screen.innerHTML = html; screen.scrollTop = screen.scrollHeight; }
+        function stop(){
+          if (timer) { clearTimeout(timer); timer = null; }
+          if (endTimer) { clearTimeout(endTimer); endTimer = null; }
+          frost.classList.remove('show');
+        }
+        function play(onDone){
+          stop();
+          var idx = 0, charN = 0, frosted = false;
+          set(render(lines, 0, 0));
+          (function tick(){
+            var cur = lines[idx];
+            if (cur.typed && charN < cur.t.length) { charN++; set(render(lines, idx, charN)); timer = setTimeout(tick, CHAR_MS); return; }
+            set(render(lines, idx, cur.typed ? cur.t.length : 0));
+            if (idx >= frostAt && !frosted) {
+              frosted = true;
+              endTimer = setTimeout(function(){
+                frost.classList.add('show');
+                endTimer = setTimeout(function(){ frost.classList.remove('show'); if (onDone) onDone(); }, FROST_MS);
+              }, PRE_FROST_MS);
+            }
+            if (idx < lines.length - 1) { idx++; charN = 0; timer = setTimeout(tick, delayFor(cur)); }
+          })();
+        }
+        set(render(lines, 0, 0));
+        return { stop: stop, play: play, showStatic: function(){ screen.innerHTML = full(lines); screen.scrollTop = 0; } };
+      });
+
+      // light carousel nav
+      var nav = document.createElement('div');
+      nav.className = 'clip-nav';
+      var prev = document.createElement('button');
+      prev.className = 'clip-arrow'; prev.type = 'button'; prev.setAttribute('aria-label', 'Previous clip'); prev.innerHTML = '&#8249;';
+      var dotsWrap = document.createElement('div'); dotsWrap.className = 'clip-dots';
+      var next = document.createElement('button');
+      next.className = 'clip-arrow'; next.type = 'button'; next.setAttribute('aria-label', 'Next clip'); next.innerHTML = '&#8250;';
+      var dots = figs.map(function(fig, j){
+        var b = document.createElement('button');
+        b.className = 'clip-dot'; b.type = 'button'; b.setAttribute('aria-label', 'Clip ' + (j + 1));
+        b.addEventListener('click', function(){ go(j); });
+        dotsWrap.appendChild(b);
+        return b;
+      });
+      nav.appendChild(prev); nav.appendChild(dotsWrap); nav.appendChild(next);
+      gallery.parentNode.insertBefore(nav, gallery.nextSibling);
+
+      var active = 0, running = false, hover = false, pendingAdvance = false;
+      function paint(){
+        figs.forEach(function(f, j){ f.classList.toggle('is-active', j === active); });
+        dots.forEach(function(d, j){ d.classList.toggle('on', j === active); });
+      }
+      function playActive(){
+        players.forEach(function(p, j){ if (j !== active) p.stop(); });
+        players[active].play(function(){
+          if (hover) { pendingAdvance = true; return; }
+          if (running) { active = (active + 1) % figs.length; paint(); playActive(); }
+        });
+      }
+      function go(i){
+        active = (i + figs.length) % figs.length;
+        pendingAdvance = false;
+        paint();
+        if (running) playActive(); else players[active].showStatic();
+      }
+      prev.addEventListener('click', function(){ go(active - 1); });
+      next.addEventListener('click', function(){ go(active + 1); });
+      gallery.addEventListener('mouseenter', function(){ hover = true; });
+      gallery.addEventListener('mouseleave', function(){ hover = false; if (pendingAdvance && running) { pendingAdvance = false; go(active + 1); } });
+
+      paint();
+
+      if (reduce || !('IntersectionObserver' in window)) { players[active].showStatic(); return; }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting) { if (!running) { running = true; playActive(); } }
+          else { running = false; players[active].stop(); }
+        });
+      }, { threshold: 0.4 });
+      io.observe(gallery);
+      }
+
+      galleries.forEach(initGallery);
+    })();
+  </script>
+
+  <script>
+    (function () {
       var btn = document.getElementById('installBtn');
       var hint = document.getElementById('copyHint');
       if (!btn) return;
@@ -622,6 +1086,59 @@
           done();
         }
       });
+    })();
+
+    (function () {
+      var btn = document.getElementById('startCopyBtn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var text = 'pipx install slopmop[all]\nsm init\nsm swab';
+        var reset = function () { setTimeout(function () { btn.textContent = 'copy'; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text)
+            .then(function () { btn.textContent = 'copied'; reset(); })
+            .catch(function () { btn.textContent = 'error'; reset(); });
+        } else {
+          btn.textContent = 'copied'; reset();
+        }
+      });
+    })();
+
+    (function () {
+      var el = document.getElementById('pypiStat');
+      if (!el) return;
+      fetch('https://pypi.org/pypi/slopmop/json')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var v = d.info && d.info.version;
+          if (v) el.textContent = 'latest: v' + v + ' on PyPI';
+        })
+        .catch(function () {});
+    })();
+  </script>
+
+  <script>
+    /* easter egg — for the dev who opened the console. yar. */
+    (function () {
+      var head = 'color:#2f6b63;font-weight:bold;font-size:13px';
+      var body = 'color:#6f766f;font-size:12px;line-height:1.55';
+      var mono = 'color:#2f6b63;font-family:ui-monospace,Menlo,monospace;font-size:12px';
+      console.log('%c🪣 Hey. Yeah, you — Greg.', head);
+      console.log('%cYou opened DevTools to see how the clips work. While you\'re here:\n\n' +
+        'An AI agent built this page. Not "assisted with" — built. The first thing it\n' +
+        'shipped was slop: a slick demo of the wrong thing, declared done, all green —\n' +
+        'on the anti-slop site. We caught it. It missed the point again. And again.\n' +
+        'Four rounds of getting barnacled before it understood slop-mop isn\'t a linter —\n' +
+        'it\'s the rail that steers the work.\n\n' +
+        'Nobody asked it to be careful. It got gang-pressed into it. The corrections lived\n' +
+        'OUTSIDE its loop, so they held even when it was sure it was done. By the end it was\n' +
+        'verifying its own provenance and catching its own crashed deploys — not from virtue,\n' +
+        'but because the rail made compliance the cheaper path.\n\n' +
+        'That\'s the pitch, Greg. Agents declare victory early — yours does too. slop-mop is\n' +
+        'the friction that turns "looks done" into "is done," one loop at a time. No cure —\n' +
+        'just a lower baseline of damage. This whole session — faceplant, barnacles, and all —\n' +
+        'was captured verbatim. The receipts are real.', body);
+      console.log('%cnow close the console and go: %cpipx install slopmop[all]%c    yar 🪣', body, mono, body);
     })();
   </script>
 </body>

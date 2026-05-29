@@ -8,6 +8,8 @@
   <meta name="keywords" content="slop-mop, slopmop, AI coding agent, code quality, gate system, Claude plugin, code review automation, LLM coding, agent guardrails, CI quality gates" />
   <meta name="author" content="William Martin" />
   <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#2f6b63" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="slop-mop — code quality gates for AI coding agents" />
@@ -17,6 +19,8 @@
   <meta property="og:site_name" content="slop-mop" />
   <meta property="og:image" content="https://www.slop-mop.com/heraldic_splash.png" />
   <meta property="og:image:alt" content="slop-mop heraldic seal — weaponized mops outside the loop" />
+  <meta property="og:image:width" content="1024" />
+  <meta property="og:image:height" content="1536" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -378,6 +382,30 @@
     footer a { color: var(--ink-faint); }
     footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
+    .pypi-stat {
+      margin: 0.5rem 0 0;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.78rem;
+      color: var(--ink-faint);
+      min-height: 1em;
+    }
+    .block-wrap { position: relative; }
+    .copy-block {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: var(--code-bg);
+      border: 1px solid var(--rule);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: color 120ms ease, border-color 120ms ease;
+    }
+    .copy-block:hover { color: var(--accent); border-color: var(--accent); }
+
     @media (max-width: 40rem) {
       .callouts { grid-template-columns: 1fr; }
       .hero h1 { font-size: 1.8rem; }
@@ -417,6 +445,7 @@
         <a class="btn btn--primary" href="https://github.com/ScienceIsNeato/slop-mop">View on GitHub</a>
         <a class="btn" href="https://github.com/ScienceIsNeato/slop-mop#use-with-claude">Claude plugin &amp; skill</a>
       </div>
+      <p class="pypi-stat" id="pypiStat"></p>
     </section>
 
     <div class="callouts">
@@ -543,9 +572,12 @@
 
     <section id="start">
       <h2>Start</h2>
+      <div class="block-wrap">
       <pre class="block"><code><span class="comment">$ </span>pipx install slopmop[all]
 <span class="comment">$ </span>sm init        <span class="comment"># wire it into a repo</span>
 <span class="comment">$ </span>sm swab        <span class="comment"># run the loop; fix what it flags; repeat</span></code></pre>
+      <button class="copy-block" id="startCopyBtn" type="button" title="Copy commands">copy</button>
+      </div>
       <p class="section-lead">
         Inheriting a messy repo? Start with <code>sm refit --start</code> and walk the
         structured cleanup before settling into the day-to-day loop.
@@ -622,6 +654,36 @@
           done();
         }
       });
+    })();
+
+    (function () {
+      var btn = document.getElementById('startCopyBtn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var text = 'pipx install slopmop[all]
+sm init
+sm swab';
+        var reset = function () { setTimeout(function () { btn.textContent = 'copy'; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text)
+            .then(function () { btn.textContent = 'copied'; reset(); })
+            .catch(function () { btn.textContent = 'error'; reset(); });
+        } else {
+          btn.textContent = 'copied'; reset();
+        }
+      });
+    })();
+
+    (function () {
+      var el = document.getElementById('pypiStat');
+      if (!el) return;
+      fetch('https://pypi.org/pypi/slopmop/json')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var v = d.info && d.info.version;
+          if (v) el.textContent = 'latest: v' + v + ' on PyPI';
+        })
+        .catch(function () {});
     })();
   </script>
 </body>

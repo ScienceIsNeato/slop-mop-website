@@ -230,6 +230,35 @@
         </li>
       </ul>
 
+      <h3>What was actually fixed — versus baselined</h3>
+      <p>
+        The findings above use the word &ldquo;remediation&rdquo; generously. Here is the honest split of a 400+-file PR whose bulk was reformatting: a <em>small</em> amount of genuine fixing, and a lot of &ldquo;accept the existing state and guard against regressions from here.&rdquo; Onboarding a 322k-line legacy codebase is mostly the latter — refit earns a clean <em>starting line</em>, not a rewrite of history — and we won&rsquo;t dress baselining up as a deep clean.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Genuinely fixed</th>
+            <td>GitHub Actions least-privilege (<code>contents: read</code>); a Docker sandbox test corrected (port-map keys <code>int</code>&nbsp;&rarr;&nbsp;<code>str</code>, and a hardcoded <code>/tmp</code> path swapped for <code>tempfile.gettempdir()</code>). That is roughly the full extent of real code/test change.</td>
+          </tr>
+          <tr>
+            <th>Suppressed</th>
+            <td><strong>61</strong> <code># type: ignore</code> / <code># noqa</code> markers added — the type and lint gates were silenced, not satisfied.</td>
+          </tr>
+          <tr>
+            <th>Baselined (Python)</th>
+            <td>Coverage frozen at the existing <code>49%</code>; <code>strict_typing: false</code> and <code>strict: false</code> downgrade the strict-typing and type-blindness gates.</td>
+          </tr>
+          <tr>
+            <th>Scoped out</th>
+            <td>The TypeScript front-end gate suite (formatting, dead-code, type-checking, bogus-tests) and three meta-gates — including <code>gate-dodging</code> and <code>silenced-gates</code>, the gates that flag suppression — are disabled in the committed config. The green board below is the Python core, not the whole repo.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Read the green board that follows with that in mind: it is real, but it is the score for a deliberately scoped, baselined Python surface — not a claim that 322k lines got cleaned.
+      </p>
+
       <div class="terminal">
         <div class="term-bar">
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>

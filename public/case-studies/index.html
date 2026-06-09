@@ -154,6 +154,38 @@
     </section>
 
     <section>
+      <h2>Why · refit, then maintenance</h2>
+      <p class="section-lead">
+        slop-mop runs in two modes that do very different jobs. Knowing which one a case study is about is half of reading it honestly.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Refit · one-time</th>
+            <td>Onboarding. The single goal is a <em>seaworthy ship</em>: a repo with no <em>known</em> issues and a committed baseline. You run it once, and this case study is about that run.</td>
+          </tr>
+          <tr>
+            <th>Maintenance · every watch</th>
+            <td><code>sm swab</code> &rarr; <code>sm scour</code> &rarr; <code>sm buff</code>. The steady state, and where the lion&rsquo;s share of the real code-quality work gets exercised. The <strong>buff cycle</strong> — turning CI results and review feedback into the next fix — is the throughput multiplier that makes the whole thing pay off.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        Why bother with refit at all? Because you cannot swab and scour mechanically every watch and <em>trust the result</em> unless you start from a known baseline. Refit draws that line. After it, everything maintenance flags is <em>new</em> slop — from the change in front of you — not years of accumulated legacy noise. That line is what makes the daily loop fast and worth trusting.
+      </p>
+
+      <p>
+        The ideal refit is as frictionless as possible. Fixing obvious slop is not friction — auto-fix handles that for free. The friction worth naming is slop-mop&rsquo;s <em>own</em>: this is a young tool with limited support, and onboarding a 322k-line codebase surfaced real rough edges in the tool itself. We log those as <a href="https://github.com/ScienceIsNeato/slop-mop/labels/barnacle" target="_blank" rel="noopener">barnacles</a> rather than hide them.
+      </p>
+
+      <p>
+        And &ldquo;refit didn&rsquo;t fix much&rdquo; cuts both ways. It can mean the repo already had strong practices — or that slop-mop disabled gates and lowered thresholds just to go green, which is exactly what we <em>don&rsquo;t</em> want. This onboarding was a mix, leaning toward baselining (see the honest breakdown below). The upshot is still a good one: OpenHands is now mostly onboarded. Ideally the coverage threshold climbs from 49% over time — but the team can already run the maintenance loop without fighting refit churn.
+      </p>
+    </section>
+
+    <section>
       <h2>Case Study #1 · Onboarding OpenHands</h2>
       <p class="section-lead">
         OpenHands is a massive developer assistant platform. Onboarding its primary repository (300k+ lines of Python) to slop-mop required running <code>sm refit</code> to review all quality gates, establish baseline configurations, and execute step-by-step code remediation.

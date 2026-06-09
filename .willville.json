@@ -1,7 +1,7 @@
 {
   "agent": {
-    "status": "Homepage clips now play the full over-the-shoulder loop — agent thinks, runs the command, reacts to the result — including a meta clip of this very session getting steered straight",
-    "direction": "Tune clip pacing with Will, then commit the whole arc and open a PR",
+    "status": "Writing up the OpenHands onboarding case study with the warts left in \u2014 including two places the tool got it wrong, each linked to the bug report it generated",
+    "direction": "Honesty is the pitch; getting the write-up reviewed and shipped",
     "last_update": "2026-05-29T14:15:00Z"
   }
 }

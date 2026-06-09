@@ -185,6 +185,10 @@
             <th>Remediation PR</th>
             <td><a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a></td>
           </tr>
+          <tr>
+            <th>Barnacles filed (against ourselves)</th>
+            <td><a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a></td>
+          </tr>
         </tbody>
       </table>
 
@@ -250,12 +254,40 @@
    <span class="ok">✅ overconfidence:missing-annotations.py  (passed)</span>
    <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span></pre>
       </div>
-      <p class="term-caption">Executing <code>sm status</code> on OpenHands now reports 100% green and active in Maintenance Mode.</p>
+      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board. Read that for exactly what it is: <em>slop-mop's own gate suite passes.</em> It is not the same thing as OpenHands' native CI being green — that took the reconciliation in the ledger below.</p>
+    </section>
+
+    <section>
+      <h2>The honest ledger · where slop-mop got it wrong</h2>
+      <p class="section-lead">
+        We are not selling a green checkmark. The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">Misstep · It rewrote immutable migrations</div>
+          <blockquote>refit ran its formatters over <strong>94 applied database migrations</strong> in <code>enterprise/migrations/versions/</code>. Applied migrations are historical records — they must never be reformatted. The change was simply wrong, and it tripped OpenHands' migration-check CI on top of it.</blockquote>
+          <p class="impl"><strong>Cost &amp; fix:</strong> all 94 files were reverted to upstream. Filed against ourselves as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">barnacle #263</a> — refit must exclude <code>migrations/</code> and other immutable/generated trees from formatting.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Wasted work · It double-formatted a repo that already had a formatter</div>
+          <blockquote>OpenHands already pins <code>ruff</code> (v0.12.5 / v0.4.1). refit reformatted <strong>417 files</strong> with its <em>own</em> formatters anyway — and ruff promptly disagreed, demanding 139 fixes and 32 reformats. The work had to be redone with the host's ruff, partially undoing slop-mop's. Net result: churn, spent tokens, and a red lint board until it was reconciled by hand.</blockquote>
+          <p class="impl"><strong>Cost &amp; fix:</strong> OpenHands' own ruff hooks were run and committed. Filed as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">barnacle #264</a> — when a repo pins a formatter, refit should defer to it, not fight it.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Framing · "Maintenance Mode" is not "your CI is green"</div>
+          <blockquote>An 18/18 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
+          <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both, warts included.</p>
+        </li>
+      </ul>
     </section>
 
     <div class="note">
       <p>
-        <strong>Lessons Learned:</strong> Onboarding a large codebase to slop-mop is not about rewrite-everything. It is about identifying structural risks (like bogus tests), locking in a baseline (like coverage thresholds), and configuring scope rules so that future PRs can be validated without legacy noise.
+        <strong>Lessons learned:</strong> Onboarding a large codebase is not about rewrite-everything. It is about identifying structural risks (like bogus tests), locking in a baseline (like coverage thresholds), and scoping rules so future PRs are validated without legacy noise.
+      </p>
+      <p>
+        It is also about being honest when the tool gets it wrong. Two of the findings above were slop-mop's <em>own</em> mistakes, and both became barnacles (<a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a>) — the same friction-reporting loop we ask every user to run. We would rather show you the warts and the fixes than a flawless screenshot.
       </p>
     </div>
 

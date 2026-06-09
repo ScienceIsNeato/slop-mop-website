@@ -302,7 +302,7 @@
 <span class="dim">🔀 Project: OpenHands</span>
 <span class="dim">🔧 State: scour_clean</span>
 
-<span class="ok">✨ MAINTENANCE MODE ACTIVE · 18/18 checks passed</span>
+<span class="ok">✨ MAINTENANCE MODE ACTIVE · 20/20 checks passed</span>
 
    <span class="ok">✅ myopia:dependency-risk.py  (passed)</span>
    <span class="ok">✅ myopia:github-actions-hygiene  (passed)</span>
@@ -313,9 +313,11 @@
    <span class="ok">✅ laziness:debugger-artifacts  (passed)</span>
    <span class="ok">✅ overconfidence:coverage-gaps.py  (passed)</span>
    <span class="ok">✅ overconfidence:missing-annotations.py  (passed)</span>
-   <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span></pre>
+   <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span>
+   <span class="ok">✅ deceptiveness:gate-dodging  (passed)</span>
+   <span class="ok">✅ laziness:silenced-gates  (passed)</span></pre>
       </div>
-      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board. Read that for exactly what it is: <em>slop-mop's own gate suite passes.</em> It is not the same thing as OpenHands' native CI being green — that took the reconciliation in the ledger below.</p>
+      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
 
       <h3>A second pass · did we leave real slop on the table?</h3>
       <p>

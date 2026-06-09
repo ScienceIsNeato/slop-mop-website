@@ -271,7 +271,7 @@
         <tbody>
           <tr>
             <th>Genuinely fixed</th>
-            <td>GitHub Actions least-privilege (<code>contents: read</code>); a Docker sandbox test corrected (port-map keys <code>int</code>&nbsp;&rarr;&nbsp;<code>str</code>, and a hardcoded <code>/tmp</code> path swapped for <code>tempfile.gettempdir()</code>). That is roughly the full extent of real code/test change.</td>
+            <td>GitHub Actions least-privilege (<code>contents: read</code>); a Docker sandbox test corrected (port-map keys <code>int</code>&nbsp;&rarr;&nbsp;<code>str</code>, and a hardcoded <code>/tmp</code> path swapped for <code>tempfile.gettempdir()</code>); and duplicate pagination <code>Query()</code> titles extracted to shared constants across 11 routers (see the second pass below). A small, real set of changes — not a 322k-line clean.</td>
           </tr>
           <tr>
             <th>Suppressed</th>
@@ -324,7 +324,7 @@
       <ul>
         <li><strong>The Python core is clean.</strong> Zero committed debugger artifacts; the lightweight, host-independent gates find essentially nothing to fix.</li>
         <li><strong>Two meta-gates went back on.</strong> <code>gate-dodging</code> and <code>silenced-gates</code> both <em>pass</em> on this repo, so the baseline config isn't gaming the gates and no Python gate is muted. They are enabled again, asserting exactly that on every run.</li>
-        <li><strong>One genuine finding, flagged not forced.</strong> Tightening <code>string-duplication</code> surfaces the same FastAPI pagination descriptions copied ~13&times; across the router layer — real duplication. We flagged it rather than impose a cross-cutting refactor we could not verify against OpenHands' own test suite.</li>
+        <li><strong>One genuine finding, fixed and verified.</strong> Tightening <code>string-duplication</code> surfaced the same FastAPI pagination <code>Query()</code> titles copy-pasted ~13&times; each across 11 routers — real duplication. We installed OpenHands&rsquo; toolchain, extracted them to shared constants in the existing <code>paging_utils.py</code>, and confirmed no behavior change (1,172 app-server and OpenAPI-schema tests still pass). With the duplication gone, the gate&rsquo;s threshold drops from the baselined <code>20</code> back to <code>4</code> — a real tightening, earned by a real fix, not a config dial.</li>
       </ul>
       <p>
         That answers the earlier ambiguity directly: this baseline reflects <em>good existing practice</em>, not slop swept under a rug. OpenHands runs its own eslint, <code>tsc</code>, ruff, and mypy — all green — so most of what slop-mop &ldquo;downgraded&rdquo; was either redundant with the host's CI or simply stricter than it. The honest next step belongs to the OpenHands team, not us: raise the 49% coverage floor over time. Onboarding earned the clean starting line; the deep cleaning, where any remains, happens in maintenance.

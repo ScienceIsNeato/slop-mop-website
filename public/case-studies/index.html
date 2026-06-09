@@ -316,6 +316,19 @@
    <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span></pre>
       </div>
       <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board. Read that for exactly what it is: <em>slop-mop's own gate suite passes.</em> It is not the same thing as OpenHands' native CI being green — that took the reconciliation in the ledger below.</p>
+
+      <h3>A second pass · did we leave real slop on the table?</h3>
+      <p>
+        A fair question, so we went back and looked harder for genuine slop hiding behind the baseline. The honest result: very little turned up — and that scarcity is itself the signal.
+      </p>
+      <ul>
+        <li><strong>The Python core is clean.</strong> Zero committed debugger artifacts; the lightweight, host-independent gates find essentially nothing to fix.</li>
+        <li><strong>Two meta-gates went back on.</strong> <code>gate-dodging</code> and <code>silenced-gates</code> both <em>pass</em> on this repo, so the baseline config isn't gaming the gates and no Python gate is muted. They are enabled again, asserting exactly that on every run.</li>
+        <li><strong>One genuine finding, flagged not forced.</strong> Tightening <code>string-duplication</code> surfaces the same FastAPI pagination descriptions copied ~13&times; across the router layer — real duplication. We flagged it rather than impose a cross-cutting refactor we could not verify against OpenHands' own test suite.</li>
+      </ul>
+      <p>
+        That answers the earlier ambiguity directly: this baseline reflects <em>good existing practice</em>, not slop swept under a rug. OpenHands runs its own eslint, <code>tsc</code>, ruff, and mypy — all green — so most of what slop-mop &ldquo;downgraded&rdquo; was either redundant with the host's CI or simply stricter than it. The honest next step belongs to the OpenHands team, not us: raise the 49% coverage floor over time. Onboarding earned the clean starting line; the deep cleaning, where any remains, happens in maintenance.
+      </p>
     </section>
 
     <section>

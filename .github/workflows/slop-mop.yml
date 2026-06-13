@@ -1,0 +1,38 @@
+# Run slop-mop on its own website via the published Marketplace action.
+# Uploads SARIF to GitHub Code Scanning so the repo has real scan results
+# (and so `sm buff` has CI signal to triage). Advisory: the static site
+# won't be blocked on gates that don't apply, but the scan + hull grade
+# still run and report.
+name: slop-mop
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scour:
+    name: slop-mop-action @v1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: ScienceIsNeato/slop-mop-action@v1
+        with:
+          command: scour
+          fail-on-failure: "false"
+          upload-sarif: "true"
+          sarif-category: slopmop

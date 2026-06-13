@@ -583,6 +583,22 @@
         Inheriting a messy repo? Start with <code>sm refit --start</code> and walk the
         structured cleanup before settling into the day-to-day loop.
       </p>
+
+      <p class="section-lead">
+        <strong>For the full effect, press the gang.</strong> This is the manual, one-time
+        step a human runs to move the rule <em>outside the loop</em> &mdash; an agent
+        can&rsquo;t press it for you:
+      </p>
+      <pre class="block"><code><span class="comment">$ </span>sm gang press   <span class="comment"># seize instinct commands into the sm rails</span></code></pre>
+      <p class="section-lead">
+        It installs shell intercepts and a git wrapper on your machine: the reflex commands an
+        agent reaches for &mdash; <code>pytest</code>, <code>gh run</code>, <code>mypy</code>
+        &mdash; get redirected to the matching <code>sm</code> rail, and
+        <code>git commit --no-verify</code> is blocked outright. The gates run without it; with
+        it, the correct command becomes the path of least resistance. It edits your shell config
+        (bash or zsh) and asks for explicit confirmation; undo it any time with
+        <code>sm gang discharge</code>.
+      </p>
     </section>
 
     <section id="practice">

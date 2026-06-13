@@ -184,6 +184,14 @@
       },
       {
         "@type": "Question",
+        "name": "Do I need to run sm gang press, and what does it do?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For the full effect, yes \u2014 and a human has to run it. sm gang press is a one-time setup step that installs shell intercepts and a git wrapper on your machine: reflex commands an agent reaches for (pytest, gh run, mypy) get redirected to the matching sm rail, and git commit --no-verify is blocked outright. The gates work without it, but pressing the gang is what makes the correct command the path of least resistance instead of an optional one. It edits your shell config (bash or zsh) and asks for explicit confirmation, so an agent can't run it for you. Undo it any time with sm gang discharge."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Is slop-mop free and open source?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -256,6 +264,19 @@
           Run <code>pipx install slopmop[all]</code>, then <code>sm swab</code> after each
           change. Use <code>sm scour</code> for a deep pass before a PR, and <code>sm buff</code>
           to work CI and review feedback into next steps.
+        </p>
+
+        <h3>Do I need to run <code>sm gang press</code>, and what does it do?</h3>
+        <p>
+          For the full effect, yes &mdash; and a human has to run it. <code>sm gang press</code>
+          is a one-time setup step that installs shell intercepts and a git wrapper on your
+          machine: the reflex commands an agent reaches for &mdash; <code>pytest</code>,
+          <code>gh run</code>, <code>mypy</code> &mdash; get redirected to the matching
+          <code>sm</code> rail, and <code>git commit --no-verify</code> is blocked outright. The
+          gates work without it, but pressing the gang is what makes the correct command the path
+          of least resistance instead of an optional one. It edits your shell config (bash or zsh)
+          and asks for explicit confirmation, so an agent can&rsquo;t run it for you. Undo it any
+          time with <code>sm gang discharge</code>.
         </p>
 
         <h3>Is slop-mop free and open source?</h3>

@@ -11,6 +11,7 @@ slop-mop runs as a CLI (`sm`) that any coding agent can call, ships as a Claude 
 - [sail](https://github.com/ScienceIsNeato/slop-mop): runs the right verb for you when you're not sure what comes next
 - [refit](https://github.com/ScienceIsNeato/slop-mop): a structured cleanup pass for a repo you've inherited
 - [barnacle](https://github.com/ScienceIsNeato/slop-mop): file friction upstream when the tool is wrong, instead of routing around it
+- [gang press](https://github.com/ScienceIsNeato/slop-mop): one-time manual setup a human runs — installs shell intercepts and a git wrapper so reflex commands (pytest, gh, mypy) route to sm and `git commit --no-verify` is blocked
 
 ## Install
 - [PyPI — slopmop](https://pypi.org/project/slopmop/): `pipx install slopmop[all]`

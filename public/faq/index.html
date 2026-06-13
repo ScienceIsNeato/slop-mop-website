@@ -138,84 +138,84 @@
   </style>
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What is slop-mop?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "slop-mop is a code-quality gate system for AI coding agents. It catches the shortcuts agents take under reward pressure — tests that assert nothing, dead code, silenced quality gates, and --no-verify commit-hook bypasses — then hands back concrete cleanup work instead of a scolding. Install it with pipx install slopmop[all] and run sm swab."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What problems does slop-mop catch?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Fake tests that run but assert nothing, dead and unreachable code, functions grown past size limits, secrets committed in test fixtures, silenced or skipped quality gates, and commit-hook bypasses like git commit --no-verify."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Does slop-mop work with Claude Code, Cursor, and other AI coding agents?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. slop-mop is agent-agnostic — it runs as a CLI (sm) any coding agent can call, and it ships as a Claude plugin and skill that auto-triggers on remediation with six slash commands. It also runs in CI via slop-mop-action for GitHub Actions."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How is slop-mop different from a linter or normal CI?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "A linter checks style and a CI job passes or fails. slop-mop targets the specific ways AI agents game quality — faking tests, silencing gates, bypassing hooks — and instead of just failing, it hands the agent a sequenced list of concrete cleanup work to do next."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I run slop-mop in CI or GitHub Actions?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes \u2014 slop-mop-action is on the GitHub Marketplace. Add it to a workflow with uses: ScienceIsNeato/slop-mop-action@v1; it installs slop-mop, runs swab or scour on every push or PR, and posts the repo's hull grade (an A+ to F rating) to the job summary while uploading SARIF to GitHub Code Scanning. Set minimum-grade to fail the build when the hull drops below a letter, or run it advisory so it reports without blocking."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I install slop-mop?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Run pipx install slopmop[all], then sm swab after each change. Use sm scour for a deep pass before a PR, and sm buff to work CI and review feedback into next steps."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does slop-mop enforce things outside the loop?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "A rule inside the agent's loop \u2014 a prompt that says don't skip the tests \u2014 is just another cost to optimize away under reward pressure. slop-mop puts the rule outside that loop, where the agent can't reason around it. The gates run as external checks (locally, in pre-commit and pre-push hooks, and in CI via slop-mop-action), and sm gang press enforces it at the shell itself: reflex commands like pytest, gh run, and mypy are intercepted and routed to the matching sm rail, and git commit --no-verify is blocked outright. The agent isn't asked not to take the shortcut \u2014 the shortcut simply isn't reachable, so following the rail becomes the shortest path to the reward."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do I need to run sm gang press, and what does it do?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "For the full effect, yes \u2014 and a human has to run it. sm gang press is a one-time setup step that installs shell intercepts and a git wrapper on your machine: reflex commands an agent reaches for (pytest, gh run, mypy) get redirected to the matching sm rail, and git commit --no-verify is blocked outright. The gates work without it, but pressing the gang is what makes the correct command the path of least resistance instead of an optional one. It edits your shell config (bash or zsh) and asks for explicit confirmation, so an agent can't run it for you. Undo it any time with sm gang discharge."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is slop-mop free and open source?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. slop-mop is free and open source — the tool, its gates, and docs are on GitHub, and it is published on PyPI as slopmop."
-        }
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is slop-mop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "slop-mop is a code-quality gate system for AI coding agents. It catches the shortcuts agents take under reward pressure — tests that assert nothing, dead code, silenced quality gates, and --no-verify commit-hook bypasses — then hands back concrete cleanup work instead of a scolding. Install it with pipx install slopmop[all] and run sm swab."
       }
-    ]
-  }
+    },
+    {
+      "@type": "Question",
+      "name": "What problems does slop-mop catch?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fake tests that run but assert nothing, dead and unreachable code, functions grown past size limits, secrets committed in test fixtures, silenced or skipped quality gates, and commit-hook bypasses like git commit --no-verify."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does slop-mop work with Claude Code, Cursor, and other AI coding agents?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. slop-mop is agent-agnostic — it runs as a CLI (sm) any coding agent can call, and it ships as a Claude plugin and skill that auto-triggers on remediation with six slash commands. It also runs in CI via slop-mop-action for GitHub Actions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is slop-mop different from a linter or normal CI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A linter checks style and a CI job passes or fails. slop-mop targets the specific ways AI agents game quality — faking tests, silencing gates, bypassing hooks — and instead of just failing, it hands the agent a sequenced list of concrete cleanup work to do next."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I run slop-mop in CI or GitHub Actions?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — slop-mop-action is on the GitHub Marketplace. Add it to a workflow with uses: ScienceIsNeato/slop-mop-action@v1; it installs slop-mop, runs swab or scour on every push or PR, and posts the repo’s hull grade (an A+–F rating) to the job summary while uploading SARIF to GitHub Code Scanning. Set minimum-grade to fail the build when the hull drops below a letter, or run it advisory so it reports without blocking."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I install slop-mop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Run pipx install slopmop[all], then sm swab after each change. Use sm scour for a deep pass before a PR, and sm buff to work CI and review feedback into next steps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does slop-mop enforce things “outside the loop”?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A rule inside the agent’s loop — a prompt that says “don’t skip the tests” — is just another cost to optimize away under reward pressure. slop-mop puts the rule outside that loop, where the agent can’t reason around it. The gates run as external checks — locally, in pre-commit and pre-push hooks, and in CI via slop-mop-action — and sm gang press enforces it at the shell itself: reflex commands like pytest, gh run, and mypy are intercepted and routed to the matching sm rail, and git commit --no-verify is blocked outright. The agent isn’t asked not to take the shortcut — the shortcut simply isn’t reachable, so following the rail becomes the shortest path to the reward."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to run sm gang press, and what does it do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For the full effect, yes — and a human has to run it. sm gang press is a one-time setup step that installs shell intercepts and a git wrapper on your machine: the reflex commands an agent reaches for — pytest, gh run, mypy — get redirected to the matching sm rail, and git commit --no-verify is blocked outright. The gates work without it, but pressing the gang is what makes the correct command the path of least resistance instead of an optional one. It edits your shell config (bash or zsh) and asks for explicit confirmation, so an agent can’t run it for you. Undo it any time with sm gang discharge."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is slop-mop free and open source?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. slop-mop is free and open source — the tool, its gates, and docs are on GitHub, and it is published on PyPI as slopmop."
+      }
+    }
+  ]
+}
   </script>
 </head>
 <body>

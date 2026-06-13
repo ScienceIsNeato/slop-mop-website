@@ -1,0 +1,26 @@
+# slop-mop
+
+> A code-quality gate system for AI coding agents. It catches the shortcuts agents take under reward pressure — tests that assert nothing, dead code, silenced quality gates, and `--no-verify` commit-hook bypasses — then hands back concrete cleanup work instead of a scolding.
+
+slop-mop runs as a CLI (`sm`) that any coding agent can call, ships as a Claude plugin and skill, and runs in CI via GitHub Actions. It is free and open source. Install with `pipx install slopmop[all]`, then run `sm swab`.
+
+## Commands
+- [swab](https://github.com/ScienceIsNeato/slop-mop): the fast pass — run after every change; catches the obvious slop (tests that assert nothing, oversized functions, secrets in fixtures)
+- [scour](https://github.com/ScienceIsNeato/slop-mop): the deep pass — every gate at once before you open or update a PR, including a dependency/CVE audit
+- [buff](https://github.com/ScienceIsNeato/slop-mop): work the review — turns CI and review feedback into the agent's sequenced next step
+- [sail](https://github.com/ScienceIsNeato/slop-mop): runs the right verb for you when you're not sure what comes next
+- [refit](https://github.com/ScienceIsNeato/slop-mop): a structured cleanup pass for a repo you've inherited
+- [barnacle](https://github.com/ScienceIsNeato/slop-mop): file friction upstream when the tool is wrong, instead of routing around it
+
+## Install
+- [PyPI — slopmop](https://pypi.org/project/slopmop/): `pipx install slopmop[all]`
+- [Use with Claude](https://github.com/ScienceIsNeato/slop-mop#use-with-claude): plugin and skill, auto-triggers on remediation, six slash commands
+- [slop-mop-action](https://github.com/ScienceIsNeato/slop-mop-action): run the gates in GitHub Actions
+
+## Docs and source
+- [GitHub — ScienceIsNeato/slop-mop](https://github.com/ScienceIsNeato/slop-mop): the tool, gates, and docs
+
+## Evidence
+- [Case studies](https://www.slop-mop.com/case-studies): real onboarding walkthroughs
+- [In the wild](https://www.slop-mop.com/in-the-wild): real captured agent sessions
+- [Harm Reduction for Addicted Agents](https://scienceisneato.substack.com/p/slop-mop-harm-reduction-for-addicted): why it exists and why it works

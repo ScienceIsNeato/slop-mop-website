@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>slop-mop FAQ — questions about the AI code-quality gate</title>
+  <meta name="description" content="Frequently asked questions about slop-mop — what it is, what it catches, how it works with Claude Code and Cursor, how it differs from a linter, and how to install it." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#2f6b63" />
+  <link rel="canonical" href="https://www.slop-mop.com/faq" />
+
+  <meta property="og:title" content="slop-mop FAQ" />
+  <meta property="og:description" content="Common questions about slop-mop — what it catches, how it differs from a linter, and how to install it." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.slop-mop.com/faq" />
+  <meta property="og:site_name" content="slop-mop" />
+  <meta property="og:image" content="https://www.slop-mop.com/heraldic_splash.png" />
+
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --ink: #1f2421;
+      --ink-soft: #4a514c;
+      --ink-faint: #767d77;
+      --rule: #e0dcd2;
+      --accent: #2f6b63;
+      --accent-ink: #ffffff;
+      --accent-soft: #e8efed;
+      --card: #fbfaf6;
+      --code-bg: #efece4;
+      --max: 52rem;
+      --term-bg: #14171a;
+      --term-fg: #d7dbd4;
+      --term-dim: #7f877f;
+      --term-green: #7fc8a9;
+      --term-red: #e98a7a;
+      --term-yellow: #d9c06a;
+      --term-blue: #8fb6d6;
+      --term-rule: #2a2f33;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #14171a;
+        --ink: #e9e9e3;
+        --ink-soft: #b6bbb4;
+        --ink-faint: #828b84;
+        --rule: #2a2f33;
+        --accent: #7fb8ad;
+        --accent-ink: #11201d;
+        --accent-soft: #1b2421;
+        --card: #181c1f;
+        --code-bg: #1b1f22;
+        --term-bg: #0e1113;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+    code, kbd, .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: 0.92em; }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 120ms ease; }
+    a:hover { border-bottom-color: var(--accent); }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .wordmark { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); display: inline-flex; align-items: baseline; gap: 0.5rem; }
+    .wordmark a { color: var(--ink); border-bottom: 0; }
+    .wordmark .bucket { font-family: Georgia, serif; }
+    .nav-links { display: flex; gap: 1.25rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.8rem; letter-spacing: 0.02em; }
+    .nav-links a { color: var(--ink-faint); }
+    .nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .hero h1 { font-size: 2.15rem; line-height: 1.18; letter-spacing: -0.015em; margin: 0 0 1rem; color: var(--ink); }
+    .hero .sub { font-size: 1.2rem; line-height: 1.6; color: var(--ink-soft); margin: 0 0 1rem; max-width: 42rem; }
+    .hero .sub code { color: var(--ink); }
+
+    section { margin-top: 3.5rem; }
+    h2 { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 1rem; }
+    .section-lead { color: var(--ink-soft); margin: 0 0 1.25rem; max-width: 42rem; }
+    p { margin: 0 0 1.1rem; }
+    p:last-child { margin-bottom: 0; }
+    em { font-style: italic; }
+
+    /* Metadata Table */
+    .meta-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+    .meta-table th, .meta-table td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--rule); }
+    .meta-table th { font-family: ui-monospace, Menlo, monospace; font-weight: 600; color: var(--ink-soft); width: 30%; }
+    .meta-table td { color: var(--ink); }
+    .meta-table code { background: var(--code-bg); padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .terminal { background: var(--term-bg); border-radius: 10px; border: 1px solid var(--term-rule); overflow: hidden; box-shadow: 0 18px 40px -28px rgba(0,0,0,0.55); margin-top: 1.5rem; }
+    .term-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--term-rule); }
+    .term-bar .dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+    .term-bar .r { background: #e06c5b; }
+    .term-bar .y { background: #d9b24a; }
+    .term-bar .g { background: #71b86a; }
+    .term-bar .title { margin-left: 0.6rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.74rem; color: var(--term-dim); }
+    .term-body { margin: 0; padding: 1.1rem 1.2rem; font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: 0.8rem; line-height: 1.55; color: var(--term-fg); overflow-x: auto; white-space: pre; tab-size: 2; }
+    .term-body .cmd { color: #fff; }
+    .term-body .ok { color: var(--term-green); }
+    .term-body .bad { color: var(--term-red); }
+    .term-body .dim { color: var(--term-dim); }
+    .term-body .warn { color: var(--term-yellow); }
+    .term-body .head { color: var(--term-blue); }
+    .term-body .rule { color: var(--term-rule); }
+    .term-caption { margin: 0.85rem 0 0; font-size: 0.9rem; color: var(--ink-faint); font-style: italic; }
+
+    ul.ledger { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+    .ledger-row { display: grid; gap: 0.45rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+    .ledger-row .prov { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+    .ledger-row blockquote { margin: 0; padding-left: 0.95rem; border-left: 2px solid var(--accent); color: var(--ink); font-size: 0.99rem; line-height: 1.55; }
+    .ledger-row blockquote code { color: var(--ink); background: var(--code-bg); padding: 0.03rem 0.32rem; border-radius: 3px; }
+    .ledger-row .impl { margin: 0; color: var(--ink-soft); font-size: 0.96rem; line-height: 1.55; }
+
+    .note { margin-top: 3.5rem; padding: 1.1rem 1.25rem; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; color: var(--ink-soft); font-size: 0.98rem; }
+    .note p { margin-bottom: 0.6rem; }
+
+    footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); color: var(--ink-faint); font-size: 0.88rem; }
+    footer a { color: var(--ink-faint); }
+    footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    @media (max-width: 40rem) {
+      .hero h1 { font-size: 1.8rem; }
+      .nav-links { display: none; }
+    }
+    .faq { display: grid; gap: 1.6rem; }
+    .faq h3 { font-size: 1.05rem; margin: 0 0 0.4rem; color: var(--ink); }
+    .faq p { margin: 0; font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6; }
+    .faq code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is slop-mop?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "slop-mop is a code-quality gate system for AI coding agents. It catches the shortcuts agents take under reward pressure — tests that assert nothing, dead code, silenced quality gates, and --no-verify commit-hook bypasses — then hands back concrete cleanup work instead of a scolding. Install it with pipx install slopmop[all] and run sm swab."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What problems does slop-mop catch?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Fake tests that run but assert nothing, dead and unreachable code, functions grown past size limits, secrets committed in test fixtures, silenced or skipped quality gates, and commit-hook bypasses like git commit --no-verify."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does slop-mop work with Claude Code, Cursor, and other AI coding agents?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. slop-mop is agent-agnostic — it runs as a CLI (sm) any coding agent can call, and it ships as a Claude plugin and skill that auto-triggers on remediation with six slash commands. It also runs in CI via slop-mop-action for GitHub Actions."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is slop-mop different from a linter or normal CI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A linter checks style and a CI job passes or fails. slop-mop targets the specific ways AI agents game quality — faking tests, silencing gates, bypassing hooks — and instead of just failing, it hands the agent a sequenced list of concrete cleanup work to do next."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I install slop-mop?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Run pipx install slopmop[all], then sm swab after each change. Use sm scour for a deep pass before a PR, and sm buff to work CI and review feedback into next steps."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is slop-mop free and open source?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. slop-mop is free and open source — the tool, its gates, and docs are on GitHub, and it is published on PyPI as slopmop."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <div class="wordmark"><span class="bucket">🪣</span> <a href="/">slop-mop</a></div>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/case-studies">Case Studies</a>
+        <a href="/in-the-wild">In the Wild</a>
+        <a href="/faq" aria-current="page">FAQ</a>
+        <a href="/#start">Start</a>
+        <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>
+      </nav>
+    </div>
+
+    <section class="hero" style="margin-top:0;">
+      <h1>FAQ.</h1>
+      <p class="sub">
+        Common questions about slop-mop &mdash; what it catches, how it differs from a
+        linter, and how to get started.
+      </p>
+    </section>
+
+    <section>
+      <div class="faq">
+        <h3>What is slop-mop?</h3>
+        <p>
+          slop-mop is a code-quality gate system for AI coding agents. It catches the
+          shortcuts agents take under reward pressure &mdash; tests that assert nothing,
+          dead code, silenced quality gates, and <code>--no-verify</code> commit-hook
+          bypasses &mdash; then hands back concrete cleanup work instead of a scolding.
+          Install it with <code>pipx install slopmop[all]</code> and run <code>sm swab</code>.
+        </p>
+
+        <h3>What problems does slop-mop catch?</h3>
+        <p>
+          Fake tests that run but assert nothing, dead and unreachable code, functions grown
+          past size limits, secrets committed in test fixtures, silenced or skipped quality
+          gates, and commit-hook bypasses like <code>git commit --no-verify</code>.
+        </p>
+
+        <h3>Does slop-mop work with Claude Code, Cursor, and other AI coding agents?</h3>
+        <p>
+          Yes. slop-mop is agent-agnostic &mdash; it runs as a CLI (<code>sm</code>) any coding
+          agent can call, and it ships as a Claude plugin and skill that auto-triggers on
+          remediation with six slash commands. It also runs in CI via
+          <a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a> for
+          GitHub Actions.
+        </p>
+
+        <h3>How is slop-mop different from a linter or normal CI?</h3>
+        <p>
+          A linter checks style and a CI job passes or fails. slop-mop targets the specific ways
+          AI agents game quality &mdash; faking tests, silencing gates, bypassing hooks &mdash;
+          and instead of just failing, it hands the agent a sequenced list of concrete cleanup
+          work to do next.
+        </p>
+
+        <h3>How do I install slop-mop?</h3>
+        <p>
+          Run <code>pipx install slopmop[all]</code>, then <code>sm swab</code> after each
+          change. Use <code>sm scour</code> for a deep pass before a PR, and <code>sm buff</code>
+          to work CI and review feedback into next steps.
+        </p>
+
+        <h3>Is slop-mop free and open source?</h3>
+        <p>
+          Yes. slop-mop is free and open source &mdash; the tool, its gates, and docs are on
+          <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>, and it is published on
+          PyPI as <a href="https://pypi.org/project/slopmop/">slopmop</a>.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        slop-mop by <a href="https://substack.com/@williammartin733738">William Martin</a> &middot;
+        <a href="/">Home</a> &middot;
+        <a href="/case-studies">Case Studies</a> &middot;
+        <a href="/in-the-wild">In the Wild</a> &middot;
+        <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

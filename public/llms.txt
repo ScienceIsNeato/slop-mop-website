@@ -19,6 +19,7 @@ slop-mop runs as a CLI (`sm`) that any coding agent can call, ships as a Claude 
 
 ## Docs and source
 - [GitHub — ScienceIsNeato/slop-mop](https://github.com/ScienceIsNeato/slop-mop): the tool, gates, and docs
+- [FAQ](https://www.slop-mop.com/faq): common questions about slop-mop
 
 ## Evidence
 - [Case studies](https://www.slop-mop.com/case-studies): real onboarding walkthroughs

@@ -59,62 +59,6 @@
     }
   }
   </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What is slop-mop?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "slop-mop is a code-quality gate system for AI coding agents. It catches the shortcuts agents take under reward pressure — tests that assert nothing, dead code, silenced quality gates, and --no-verify commit-hook bypasses — then hands back concrete cleanup work instead of a scolding. Install it with pipx install slopmop[all] and run sm swab."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What problems does slop-mop catch?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Fake tests that run but assert nothing, dead and unreachable code, functions grown past size limits, secrets committed in test fixtures, silenced or skipped quality gates, and commit-hook bypasses like git commit --no-verify."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Does slop-mop work with Claude Code, Cursor, and other AI coding agents?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. slop-mop is agent-agnostic — it runs as a CLI (sm) any coding agent can call, and it ships as a Claude plugin and skill that auto-triggers on remediation with six slash commands. It also runs in CI via slop-mop-action for GitHub Actions."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How is slop-mop different from a linter or normal CI?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "A linter checks style and a CI job passes or fails. slop-mop targets the specific ways AI agents game quality — faking tests, silencing gates, bypassing hooks — and instead of just failing, it hands the agent a sequenced list of concrete cleanup work to do next."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I install slop-mop?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Run pipx install slopmop[all], then sm swab after each change. Use sm scour for a deep pass before a PR, and sm buff to work CI and review feedback into next steps."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is slop-mop free and open source?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. slop-mop is free and open source — the tool, its gates, and docs are on GitHub, and it is published on PyPI as slopmop."
-        }
-      }
-    ]
-  }
-  </script>
   <style>
     :root {
       --paper: #f6f4ef;
@@ -594,6 +538,7 @@
       <nav class="nav-links">
         <a href="/case-studies">Case Studies</a>
         <a href="/in-the-wild">In the Wild</a>
+        <a href="/faq">FAQ</a>
         <a href="#practice">In practice</a>
         <a href="#who">Who it's for</a>
         <a href="#start">Start</a>
@@ -797,57 +742,6 @@
       </ul>
     </section>
 
-    <section id="faq">
-      <h2>FAQ</h2>
-      <div class="faq">
-        <h3>What is slop-mop?</h3>
-        <p>
-          slop-mop is a code-quality gate system for AI coding agents. It catches the
-          shortcuts agents take under reward pressure &mdash; tests that assert nothing,
-          dead code, silenced quality gates, and <code>--no-verify</code> commit-hook
-          bypasses &mdash; then hands back concrete cleanup work instead of a scolding.
-          Install it with <code>pipx install slopmop[all]</code> and run <code>sm swab</code>.
-        </p>
-
-        <h3>What problems does slop-mop catch?</h3>
-        <p>
-          Fake tests that run but assert nothing, dead and unreachable code, functions grown
-          past size limits, secrets committed in test fixtures, silenced or skipped quality
-          gates, and commit-hook bypasses like <code>git commit --no-verify</code>.
-        </p>
-
-        <h3>Does slop-mop work with Claude Code, Cursor, and other AI coding agents?</h3>
-        <p>
-          Yes. slop-mop is agent-agnostic &mdash; it runs as a CLI (<code>sm</code>) any coding
-          agent can call, and it ships as a Claude plugin and skill that auto-triggers on
-          remediation with six slash commands. It also runs in CI via
-          <a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a> for
-          GitHub Actions.
-        </p>
-
-        <h3>How is slop-mop different from a linter or normal CI?</h3>
-        <p>
-          A linter checks style and a CI job passes or fails. slop-mop targets the specific ways
-          AI agents game quality &mdash; faking tests, silencing gates, bypassing hooks &mdash;
-          and instead of just failing, it hands the agent a sequenced list of concrete cleanup
-          work to do next.
-        </p>
-
-        <h3>How do I install slop-mop?</h3>
-        <p>
-          Run <code>pipx install slopmop[all]</code>, then <code>sm swab</code> after each
-          change. Use <code>sm scour</code> for a deep pass before a PR, and <code>sm buff</code>
-          to work CI and review feedback into next steps.
-        </p>
-
-        <h3>Is slop-mop free and open source?</h3>
-        <p>
-          Yes. slop-mop is free and open source &mdash; the tool, its gates, and docs are on
-          <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>, and it is published on
-          PyPI as <a href="https://pypi.org/project/slopmop/">slopmop</a>.
-        </p>
-      </div>
-    </section>
 
     <div class="note">
       <p>

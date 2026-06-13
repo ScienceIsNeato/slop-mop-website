@@ -679,6 +679,22 @@
       <p class="ledger-note">More real sessions &mdash; full verbatim with provenance &mdash; live <a href="/in-the-wild">in the wild</a>.</p>
     </section>
 
+    <section id="ci">
+      <h2>CI &mdash; GitHub Actions</h2>
+      <p class="section-lead">
+        Run the same gates on every PR.
+        <a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a>, on the
+        GitHub Marketplace, installs slop-mop, runs <code>scour</code>, and posts the repo&rsquo;s
+        <strong>hull grade</strong> &mdash; an A+&ndash;F rating &mdash; to the job summary, with
+        SARIF uploaded to Code Scanning. Gate a merge on a minimum grade, or run it advisory.
+      </p>
+      <pre class="block"><code><span class="comment"># .github/workflows/slop-mop.yml</span>
+- uses: ScienceIsNeato/slop-mop-action@v1
+  with:
+    command: scour
+    minimum-grade: "B"</code></pre>
+    </section>
+
     <section id="who">
       <h2>Who it&rsquo;s for</h2>
 
@@ -745,7 +761,7 @@
         </li>
         <li>
           <span class="label">CI</span>
-          <span class="desc"><a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a> &mdash; run the gates in GitHub Actions</span>
+          <span class="desc"><a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a> &mdash; run the gates in GitHub Actions; posts the hull grade, on the Marketplace</span>
         </li>
         <li>
           <span class="label">The story</span>

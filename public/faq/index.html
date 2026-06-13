@@ -176,6 +176,14 @@
       },
       {
         "@type": "Question",
+        "name": "Can I run slop-mop in CI or GitHub Actions?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes \u2014 slop-mop-action is on the GitHub Marketplace. Add it to a workflow with uses: ScienceIsNeato/slop-mop-action@v1; it installs slop-mop, runs swab or scour on every push or PR, and posts the repo's hull grade (an A+ to F rating) to the job summary while uploading SARIF to GitHub Code Scanning. Set minimum-grade to fail the build when the hull drops below a letter, or run it advisory so it reports without blocking."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "How do I install slop-mop?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -265,6 +273,17 @@
           AI agents game quality &mdash; faking tests, silencing gates, bypassing hooks &mdash;
           and instead of just failing, it hands the agent a sequenced list of concrete cleanup
           work to do next.
+        </p>
+
+        <h3>Can I run slop-mop in CI or GitHub Actions?</h3>
+        <p>
+          Yes &mdash; <a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a>
+          is on the GitHub Marketplace. Add it to a workflow with
+          <code>uses: ScienceIsNeato/slop-mop-action@v1</code>; it installs slop-mop, runs
+          <code>swab</code> or <code>scour</code> on every push or PR, and posts the repo&rsquo;s
+          <strong>hull grade</strong> (an A+&ndash;F rating) to the job summary while uploading
+          SARIF to GitHub Code Scanning. Set <code>minimum-grade</code> to fail the build when the
+          hull drops below a letter, or run it advisory so it reports without blocking.
         </p>
 
         <h3>How do I install slop-mop?</h3>

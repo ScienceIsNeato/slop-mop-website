@@ -184,6 +184,14 @@
       },
       {
         "@type": "Question",
+        "name": "How does slop-mop enforce things outside the loop?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A rule inside the agent's loop \u2014 a prompt that says don't skip the tests \u2014 is just another cost to optimize away under reward pressure. slop-mop puts the rule outside that loop, where the agent can't reason around it. The gates run as external checks (locally, in pre-commit and pre-push hooks, and in CI via slop-mop-action), and sm gang press enforces it at the shell itself: reflex commands like pytest, gh run, and mypy are intercepted and routed to the matching sm rail, and git commit --no-verify is blocked outright. The agent isn't asked not to take the shortcut \u2014 the shortcut simply isn't reachable, so following the rail becomes the shortest path to the reward."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Do I need to run sm gang press, and what does it do?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -264,6 +272,20 @@
           Run <code>pipx install slopmop[all]</code>, then <code>sm swab</code> after each
           change. Use <code>sm scour</code> for a deep pass before a PR, and <code>sm buff</code>
           to work CI and review feedback into next steps.
+        </p>
+
+        <h3>How does slop-mop enforce things &ldquo;outside the loop&rdquo;?</h3>
+        <p>
+          A rule <em>inside</em> the agent&rsquo;s loop &mdash; a prompt that says &ldquo;don&rsquo;t
+          skip the tests&rdquo; &mdash; is just another cost to optimize away under reward pressure.
+          slop-mop puts the rule <em>outside</em> that loop, where the agent can&rsquo;t reason
+          around it. The gates run as external checks &mdash; locally, in pre-commit and pre-push
+          hooks, and in CI via <a href="https://github.com/ScienceIsNeato/slop-mop-action">slop-mop-action</a>
+          &mdash; and <code>sm gang press</code> enforces it at the shell itself: reflex commands like
+          <code>pytest</code>, <code>gh run</code>, and <code>mypy</code> are intercepted and routed to
+          the matching <code>sm</code> rail, and <code>git commit --no-verify</code> is blocked outright.
+          The agent isn&rsquo;t asked not to take the shortcut &mdash; the shortcut simply isn&rsquo;t
+          reachable, so following the rail becomes the shortest path to the reward.
         </p>
 
         <h3>Do I need to run <code>sm gang press</code>, and what does it do?</h3>

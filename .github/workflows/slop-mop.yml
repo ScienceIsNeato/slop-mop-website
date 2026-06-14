@@ -12,9 +12,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  security-events: write
-  actions: read
+  contents: read          # checkout the repo
+  security-events: write  # upload SARIF to GitHub Code Scanning
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,7 +29,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - uses: ScienceIsNeato/slop-mop-action@v1
+      - uses: ScienceIsNeato/slop-mop-action@a01c3c0971072639ea354feb20b849973af2c3b8  # v1.0.0
         with:
           command: scour
           fail-on-failure: "false"

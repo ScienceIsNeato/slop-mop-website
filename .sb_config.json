@@ -142,7 +142,7 @@
         "short_test_severity": "fail"
       },
       "gate-dodging": {
-        "enabled": false,
+        "enabled": true,
         "auto_fix": false,
         "run_on": null,
         "extra_exclude_paths": [],
@@ -277,7 +277,7 @@
         "exclude_dirs": []
       },
       "silenced-gates": {
-        "enabled": false,
+        "enabled": true,
         "auto_fix": false,
         "run_on": null,
         "extra_exclude_paths": [],
@@ -452,7 +452,7 @@
         "extensions": []
       },
       "ignored-feedback": {
-        "enabled": false,
+        "enabled": true,
         "auto_fix": false,
         "run_on": null,
         "extra_exclude_paths": [],

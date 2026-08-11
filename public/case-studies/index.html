@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>slop-mop case studies — real onboarding walkthroughs</title>
-  <meta name="description" content="Detailed case studies of onboarding production repositories to slop-mop Maintenance Mode. Walk through the gates, findings, and remediation steps on real codebases like OpenHands." />
+  <meta name="description" content="Detailed case studies of onboarding real repositories to slop-mop Maintenance Mode — OpenHands at 322k lines, and rulebook-ai taken cold from failing gates to A+. Gates, findings, remediation, and the bugs slop-mop found in itself." />
   <meta name="robots" content="index, follow" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#2f6b63" />
   <link rel="canonical" href="https://www.slop-mop.com/case-studies" />
 
   <meta property="og:title" content="slop-mop case studies — real onboarding walkthroughs" />
-  <meta property="og:description" content="Step-by-step walkthroughs of onboarding production repositories to slop-mop Maintenance Mode." />
+  <meta property="og:description" content="Two real onboarding runs: a 322k-line giant that mostly got baselined, and a small repo where refit found two latent crashes and a year-dead CI pipeline." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.slop-mop.com/case-studies" />
   <meta property="og:site_name" content="slop-mop" />
@@ -150,7 +150,7 @@
     <section class="hero" style="margin-top:0;">
       <h1>Case Studies.</h1>
       <p class="sub">
-        Real-world walkthroughs of onboarding production-grade codebases into slop-mop Maintenance Mode. Running <code>sm refit</code> to identify, categorize, and remediate legacy shortcuts, typing gaps, and configuration drift.
+        Real-world walkthroughs of onboarding codebases into slop-mop Maintenance Mode with <code>sm refit</code>. Two runs at opposite ends of the size range, with opposite honest answers: on 322k lines refit mostly bought a baseline, and on 8.5k it found crashes. Both ledgers include the bugs slop-mop found in <em>itself</em>.
       </p>
     </section>
 
@@ -335,7 +335,7 @@
     </section>
 
     <section>
-      <h2>The honest ledger · where slop-mop got it wrong</h2>
+      <h2>The honest ledger · where slop-mop got it wrong on OpenHands</h2>
       <p class="section-lead">
         We are not selling a green checkmark. The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
       </p>
@@ -359,12 +359,187 @@
       </ul>
     </section>
 
+    <section>
+      <h2>Case Study #2 · rulebook-ai, cold</h2>
+      <p class="section-lead">
+        Case study #1 onboarded a 322k-line giant, and the honest answer there was <em>mostly baselining</em>. So we ran the opposite experiment: a small repo, picked from the wild, that had never heard of us — <a href="https://github.com/botingw/rulebook-ai" target="_blank" rel="noopener">botingw/rulebook-ai</a>, ~8.5k lines of Python. No coordination with the maintainer, no cherry-picking, nothing pre-cleaned. Run <code>sm refit</code> and publish whatever falls out.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Repository</th>
+            <td><a href="https://github.com/botingw/rulebook-ai" target="_blank" rel="noopener">botingw/rulebook-ai</a> — a CLI for composable AI rule packs</td>
+          </tr>
+          <tr>
+            <th>Scanned scope</th>
+            <td>63 files · 8,473 lines (plus 201 Markdown files of distributed rule packs)</td>
+          </tr>
+          <tr>
+            <th>Language</th>
+            <td>Python</td>
+          </tr>
+          <tr>
+            <th>Starting grade</th>
+            <td><strong>8 gates failing</strong> · 155 raw findings · 6 passing</td>
+          </tr>
+          <tr>
+            <th>Final grade</th>
+            <td><code>A+ — shipshape</code> · <strong>0 findings</strong> · 21 gates passing</td>
+          </tr>
+          <tr>
+            <th>Their test suite</th>
+            <td>56 passing before · <strong>81 passing</strong> after (25 added). It was green when we found it, and green when we left it — see the ledger for the stretch in the middle where we broke it.</td>
+          </tr>
+          <tr>
+            <th>Remediation</th>
+            <td>22 commits · 69 files · +3,431/&minus;1,871. Not yet offered upstream — this is our branch, not a merged contribution, and we are not going to imply otherwise.</td>
+          </tr>
+          <tr>
+            <th>Barnacles filed (against ourselves)</th>
+            <td>4 more, all fixed in <a href="https://github.com/ScienceIsNeato/slop-mop/pull/332" target="_blank" rel="noopener">PR #332</a> — plus 6 in <a href="https://github.com/ScienceIsNeato/slop-mop/pull/331" target="_blank" rel="noopener">#331</a> from the same run</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Two crashes that were waiting to happen</h3>
+      <p>
+        The headline result is not the grade. It is that a type gate, on a repo nobody had type-checked end to end, surfaced two genuine latent crashes. Neither is a style complaint — both are exceptions waiting for the right input.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">Crash 1 · <code>Path / None</code></div>
+          <blockquote>Single-file assistant specs did <code>target_path / spec.filename</code>, but <code>filename</code> is declared <code>Optional[str]</code>. A spec that omitted it raised a bare <code>TypeError</code> deep inside the copy strategy, naming neither the spec nor the field.</blockquote>
+          <p class="impl"><strong>Fixed:</strong> the single-file branch now fails fast with a message naming the offending spec. The condition was unreachable only by luck of which specs shipped.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Crash 2 · the <code>dict.get</code> default that never fires</div>
+          <blockquote><code>entry.get("path", "").strip("/")</code>. The default applies when the key is <em>absent</em> — not when it is present and <code>null</code>. A manifest with an explicit <code>path: null</code> returned <code>None</code> and blew up on <code>.strip()</code>.</blockquote>
+          <p class="impl"><strong>Fixed:</strong> <code>(entry.get("path") or "")</code>. A one-character class of bug that no formatter and no linter was ever going to catch, and which reads as correct at a glance.</p>
+        </li>
+      </ul>
+
+      <h3>The gate was right about their CI</h3>
+      <p>
+        <code>github-actions-hygiene</code> opened with 23 findings, and one of them was not hygiene at all: the workflows still called <code>actions/upload-artifact@v3</code>, which GitHub <em>retired</em>. Their pipeline had been failing on that since <strong>September 2025</strong> — visible on their Actions tab the whole time, and exactly the kind of thing that becomes invisible once a badge has been red long enough. Pinning the actions to SHAs and moving to <code>v4</code> put their own CI back in business as a side effect of running our gate.
+      </p>
+      <p>
+        The same pass found <code>grpcio==1.71.0</code> pinned exactly, which has no wheel for current Python and fails to compile from source, and a <code>[tool.pytest]</code> block whose <code>addopts</code> was a string where modern pytest requires a list — the test suite refused to <em>start</em> until that was fixed. Neither is glamorous. Both are the difference between a new contributor getting a working checkout and giving up.
+      </p>
+
+      <h3>What was actually fixed — versus baselined</h3>
+      <p>
+        Case study #1 earned a hard sentence: most of that PR was accepting the existing state. This one lands differently, and the numbers say so plainly.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Genuinely fixed</th>
+            <td>Two latent crashes; 13 mypy errors; 18 pyright unknown-type errors resolved by giving <code>yaml.safe_load</code> a typed boundary rather than silencing it; 12 broken documentation links; a 111-line <code>create_parser()</code> split along the seams its own comments already marked; the retired CI action; the uninstallable pin; the config that stopped pytest booting; stubs declared for a dependency that was already required at runtime; and 25 new tests.</td>
+          </tr>
+          <tr>
+            <th>Suppressed</th>
+            <td><strong>9 markers total.</strong> Seven are <code>pragma: allowlist secret</code> on the literal string <code>"not-needed"</code> — a placeholder API key in distributed template files, copied verbatim into seven packs. One <code># nosec</code>, attached to a URL-scheme check that actually validates. One <code># noqa</code> for reaching at a private <code>argparse</code> type. For contrast, case study #1 added 61.</td>
+          </tr>
+          <tr>
+            <th>Baselined</th>
+            <td>Coverage, and only coverage. <code>sm init</code> wrote an 80% threshold; the repo measures 40%. Rather than gate on a bar it has never met, the threshold records where it actually stands and <code>just-this-once</code> requires &ge;80% coverage on <em>changed</em> lines — so every future PR has to move the number up rather than sideways.</td>
+          </tr>
+          <tr>
+            <th>Scoped out</th>
+            <td>The <code>tool_starters</code> and <code>vscode-extension</code> trees, excluded from six gates. These are template packs copied byte-for-byte into user projects, so the same file gets analysed once per copy — pyright reported <strong>555</strong> errors that were really 18, repeated. Excluding verbatim distribution copies is scoping, not hiding, but it is a judgement call and it belongs in this row.</td>
+          </tr>
+          <tr>
+            <th>Not compromised</th>
+            <td>Strict typing was <em>satisfied</em>, not downgraded — <code>strict_typing</code> and pyright <code>strict</code> are both still <code>true</code> and both pass. The two anti-gaming meta-gates, <code>gate-dodging</code> and <code>silenced-gates</code>, are enabled and green, which is the machine-checkable version of this whole table.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="title">rulebook-ai — sm scour</span>
+        </div>
+<pre class="term-body"><span class="cmd">$ sm scour --no-cache</span>
+
+   <span class="ok">✅ myopia:dependency-risk.py         (passed)</span>
+   <span class="ok">✅ myopia:github-actions-hygiene     (passed)</span>
+   <span class="ok">✅ myopia:ambiguity-mines.py         (passed)</span>
+   <span class="ok">✅ myopia:string-duplication.py      (passed)</span>
+   <span class="ok">✅ myopia:code-sprawl                (passed)</span>
+   <span class="ok">✅ myopia:just-this-once.py          (passed)</span>
+   <span class="ok">✅ myopia:interactive-assumptions    (passed)</span>
+   <span class="ok">✅ overconfidence:missing-annotations.py  (passed)</span>
+   <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span>
+   <span class="ok">✅ overconfidence:untested-code.py   (passed)</span>
+   <span class="ok">✅ overconfidence:coverage-gaps.py   (passed)</span>
+   <span class="ok">✅ overconfidence:dangling-references (passed)</span>
+   <span class="ok">✅ laziness:sloppy-formatting.py     (passed)</span>
+   <span class="ok">✅ laziness:repeated-code            (passed)</span>
+   <span class="ok">✅ laziness:dead-code.py             (passed)</span>
+   <span class="ok">✅ laziness:complexity-creep.py      (passed)</span>
+   <span class="ok">✅ laziness:debugger-artifacts       (passed)</span>
+   <span class="ok">✅ laziness:broken-templates.py      (passed)</span>
+   <span class="ok">✅ laziness:silenced-gates           (passed)</span>
+   <span class="ok">✅ deceptiveness:bogus-tests.py      (passed)</span>
+   <span class="ok">✅ deceptiveness:gate-dodging        (passed)</span>
+
+<span class="ok">✨ NO SLOP DETECTED · 21 checks passed</span>
+   <span class="head">⚓ hull rating: A+ — shipshape · 0 findings</span></pre>
+      </div>
+      <p class="term-caption">The finishing board, run uncached. Twenty-one gates — including the two meta-gates that exist specifically to catch a config tuned for a green screenshot.</p>
+
+      <h3>The honest ledger · we broke their tests, then nearly hid it</h3>
+      <p class="section-lead">
+        The worst thing in this case study is ours, and it is worth more than the grade.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">Our regression · a security fix that deleted a feature</div>
+          <blockquote>A bandit finding flagged <code>urlopen</code> on a URL from an environment variable. The obvious fix — restrict the scheme to <code>http</code>/<code>https</code> — quietly removed a supported workflow: pointing <code>RULEBOOK_AI_INDEX_URL</code> at a local file for offline use, which is also how their entire community-index integration suite builds its fixtures. Three of their tests went red because of us.</blockquote>
+          <p class="impl"><strong>Fix:</strong> <code>file:</code> belongs in the allowlist. The variable is operator-supplied configuration, not attacker-controlled input, and the allowlist still keeps <code>urlopen</code> away from schemes nobody intends. Satisfying a scanner is not the same as being correct.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Worse · the check that proved it was &ldquo;pre-existing&rdquo; was wrong</div>
+          <blockquote>We reported those three failures as pre-existing, on the strength of stashing our changes and re-running. But <code>git stash</code> only removes <em>uncommitted</em> work — the breaking change was already committed, so it survived the stash and every &ldquo;baseline&rdquo; run reproduced the failure. It looked convincingly like someone else&rsquo;s problem.</blockquote>
+          <p class="impl"><strong>Fix:</strong> check out the actual merge-base in a throwaway worktree and run it there. All 56 of their tests pass at the merge-base — which made the regression, and the false alarm, ours. A wrong baseline does not produce an error message; it produces confidence.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Barnacle · a scanner that never ran, reported as a finding</div>
+          <blockquote>On a checkout whose environment lacked <code>pip-audit</code>, <code>dependency-risk</code> failed with &ldquo;1 security scanner(s) found issues&rdquo; and a single finding reading &ldquo;pip-audit found issues&rdquo; — naming a vulnerability that did not exist, while concealing that nothing had been audited at all. The guard for exactly this already existed in our codebase, with a comment describing exactly this failure. It was never called from anywhere.</blockquote>
+          <p class="impl"><strong>Fix:</strong> a scanner that fails to start is a broken environment, not a security finding. It now warns and names the install command. The first attempt at that fix was <em>worse</em> than the bug — it made a missing scanner render as &ldquo;All security checks passed&rdquo; — and review caught it before it shipped.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Barnacle · the gate that could not tell code from prose</div>
+          <blockquote>Python subscript-then-call is byte-identical to Markdown link syntax, so a documented <code>handlers[cmd](args)</code> inside a fenced code block was reported as a broken link to a file named after the argument. After we fixed 12 genuinely broken links, this false positive was the <em>only</em> thing standing between the gate and green.</blockquote>
+          <p class="impl"><strong>Fix:</strong> fenced blocks are skipped and inline code spans blanked. Review then found two more holes in that fix — multi-backtick spans and spans wrapping a line — both now covered by tests.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Barnacle · refit blamed the wrong gate</div>
+          <blockquote>A targeted scour runs the requested gate <em>and its dependencies</em>. When a dependency failed, refit still announced the gate it was iterating and pointed at that gate&rsquo;s log — which had not been rewritten, so it showed the previous run&rsquo;s output. We chased a stale 13-error type log while the real failure was a one-line formatting complaint.</blockquote>
+          <p class="impl"><strong>Fix:</strong> the failing gate and its log now come from the artifact&rsquo;s own <code>first_to_fix</code>, which had been right the entire time.</p>
+        </li>
+      </ul>
+
+      <h3>What the two case studies say together</h3>
+      <p>
+        On a 322k-line legacy codebase, refit bought a <em>starting line</em> and little else — the honest word for most of it was baselining. On an 8.5k-line one, the same command found two crashes, a year-dead CI pipeline, an uninstallable dependency pin, and a test suite that could not boot. Size is the difference we <em>noticed</em>, and the intuition it suggests — that the volume of legacy findings is what forces baselining — is a reasonable one. But two repositories is not a study. They also differ in age, dependency health, CI state, and how much type checking they had ever seen, and any of those could be doing the work. Treat it as a hypothesis worth more data points, not a finding.
+      </p>
+      <p>
+        The other thing both runs share: the tool broke something each time, and each time it went in the ledger. Ten barnacles across this one repo, all filed against ourselves, all fixed. If a quality tool cannot be honest about its own defects, it has no standing to grade yours.
+      </p>
+    </section>
+
     <div class="note">
       <p>
         <strong>Lessons learned:</strong> Onboarding a large codebase is not about rewrite-everything. It is about identifying structural risks (like bogus tests), locking in a baseline (like coverage thresholds), and scoping rules so future PRs are validated without legacy noise.
       </p>
       <p>
-        It is also about being honest when the tool gets it wrong. Two of the findings above were slop-mop's <em>own</em> mistakes, and both became barnacles (<a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a>) — the same friction-reporting loop we ask every user to run. We would rather show you the warts and the fixes than a flawless screenshot.
+        It is also about being honest when the tool gets it wrong. Across these two runs, twelve of the findings above were slop-mop's <em>own</em> — two on OpenHands (<a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a>) and ten on rulebook-ai (<a href="https://github.com/ScienceIsNeato/slop-mop/pull/331" target="_blank" rel="noopener">#331</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/pull/332" target="_blank" rel="noopener">#332</a>), including one case where our own fix was worse than the bug it replaced. That is the same friction-reporting loop we ask every user to run. We would rather show you the warts and the fixes than a flawless screenshot.
       </p>
     </div>
 

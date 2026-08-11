@@ -136,13 +136,14 @@
        pre, where the terminal blocks scroll horizontally by design. */
     :not(pre) > code { overflow-wrap: break-word; }
   </style>
+</head>
 <body>
   <main class="wrap">
     <div class="topbar">
       <div class="wordmark"><span class="bucket">🪣</span> <a href="/">slop-mop</a></div>
       <nav class="nav-links">
         <a href="/">Home</a>
-        <a href="/case-studies" aria-current="page">Case Studies</a>
+        <a href="/case-studies">Case Studies</a>
         <a href="/in-the-wild">In the Wild</a>
         <a href="/faq">FAQ</a>
         <a href="/#start">Start</a>
@@ -226,12 +227,12 @@
           <p class="impl"><strong>Remediation:</strong> Added targeted <code># type: ignore[reportOptionalMemberAccess]</code> comments on optional fields, simplified import blocks, and resolved import-untyped risks.</p>
         </li>
         <li class="ledger-row">
-          <div class="prov">Gate 5 · Myopia: String Duplication & Code Sprawl</div>
+          <div class="prov">Gates 5 &amp; 6 · Myopia: String Duplication and Code Sprawl</div>
           <blockquote>&ldquo;FastAPI query docstrings, large mock databases, and massive legacy service modules (some up to 1,700 lines) tripped length thresholds.&rdquo;</blockquote>
           <p class="impl"><strong>Remediation:</strong> Configured <code>.sb_config.json</code> to exclude test suites, scripts, and frontend directories from sprawl checks, and raised thresholds to lock in the legacy baseline length parameters.</p>
         </li>
         <li class="ledger-row">
-          <div class="prov">Gate 6 · Overconfidence: Coverage Gaps</div>
+          <div class="prov">Gate 7 · Overconfidence: Coverage Gaps</div>
           <blockquote>&ldquo;Baseline project coverage check failed because the legacy codebase is at 49% coverage, falling short of the default 80% limit. Two sandbox port mapping tests were also failing.&rdquo;</blockquote>
           <p class="impl"><strong>Remediation:</strong> Set <code>threshold: 49</code> in the configuration to freeze the baseline and prevent future regressions. Corrected the sandbox unit tests to assert string mappings for Docker ports rather than integer ports.</p>
         </li>
@@ -292,7 +293,7 @@
    <span class="ok">✅ deceptiveness:gate-dodging  (passed)</span>
    <span class="ok">✅ laziness:silenced-gates  (passed)</span></pre>
       </div>
-      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
+      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board (a dozen of the twenty shown) — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
 
       <h2>A second pass · did we leave real slop on the table?</h2>
       <p>
@@ -327,7 +328,7 @@
         </li>
         <li class="ledger-row">
           <div class="prov">Framing · "Maintenance Mode" is not "your CI is green"</div>
-          <blockquote>An 18/18 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
+          <blockquote>A 20/20 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
           <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both, warts included.</p>
         </li>
       </ul>

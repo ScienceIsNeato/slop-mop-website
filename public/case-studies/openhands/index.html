@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding OpenHands — slop-mop case study</title>
+  <meta name="description" content="Onboarding a 322k-line codebase to slop-mop. Seven failing gates, an honest split of what was fixed versus baselined, and the two barnacles the run filed against slop-mop itself." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#2f6b63" />
+  <link rel="canonical" href="https://www.slop-mop.com/case-studies/openhands" />
+
+  <meta property="og:title" content="Onboarding OpenHands — slop-mop case study" />
+  <meta property="og:description" content="Onboarding a 322k-line codebase to slop-mop. Seven failing gates, an honest split of what was fixed versus baselined, and the two barnacles the run filed against slop-mop itself." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.slop-mop.com/case-studies/openhands" />
+  <meta property="og:site_name" content="slop-mop" />
+  <meta property="og:image" content="https://www.slop-mop.com/heraldic_splash.png" />
+
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --ink: #1f2421;
+      --ink-soft: #4a514c;
+      --ink-faint: #767d77;
+      --rule: #e0dcd2;
+      --accent: #2f6b63;
+      --accent-ink: #ffffff;
+      --accent-soft: #e8efed;
+      --card: #fbfaf6;
+      --code-bg: #efece4;
+      --max: 52rem;
+      --term-bg: #14171a;
+      --term-fg: #d7dbd4;
+      --term-dim: #7f877f;
+      --term-green: #7fc8a9;
+      --term-red: #e98a7a;
+      --term-yellow: #d9c06a;
+      --term-blue: #8fb6d6;
+      --term-rule: #2a2f33;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #14171a;
+        --ink: #e9e9e3;
+        --ink-soft: #b6bbb4;
+        --ink-faint: #828b84;
+        --rule: #2a2f33;
+        --accent: #7fb8ad;
+        --accent-ink: #11201d;
+        --accent-soft: #1b2421;
+        --card: #181c1f;
+        --code-bg: #1b1f22;
+        --term-bg: #0e1113;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+    code, kbd, .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: 0.92em; }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 120ms ease; }
+    a:hover { border-bottom-color: var(--accent); }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .wordmark { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); display: inline-flex; align-items: baseline; gap: 0.5rem; }
+    .wordmark a { color: var(--ink); border-bottom: 0; }
+    .wordmark .bucket { font-family: Georgia, serif; }
+    .nav-links { display: flex; gap: 1.25rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.8rem; letter-spacing: 0.02em; }
+    .nav-links a { color: var(--ink-faint); }
+    .nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .hero h1 { font-size: 2.15rem; line-height: 1.18; letter-spacing: -0.015em; margin: 0 0 1rem; color: var(--ink); }
+    .hero .sub { font-size: 1.2rem; line-height: 1.6; color: var(--ink-soft); margin: 0 0 1rem; max-width: 42rem; }
+    .hero .sub code { color: var(--ink); }
+
+    section { margin-top: 3.5rem; }
+    h2 { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 1rem; }
+    .section-lead { color: var(--ink-soft); margin: 0 0 1.25rem; max-width: 42rem; }
+    p { margin: 0 0 1.1rem; }
+    p:last-child { margin-bottom: 0; }
+    em { font-style: italic; }
+
+    /* Metadata Table */
+    .meta-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+    .meta-table th, .meta-table td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--rule); }
+    .meta-table th { font-family: ui-monospace, Menlo, monospace; font-weight: 600; color: var(--ink-soft); width: 30%; }
+    .meta-table td { color: var(--ink); }
+    .meta-table code { background: var(--code-bg); padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .terminal { background: var(--term-bg); border-radius: 10px; border: 1px solid var(--term-rule); overflow: hidden; box-shadow: 0 18px 40px -28px rgba(0,0,0,0.55); margin-top: 1.5rem; }
+    .term-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--term-rule); }
+    .term-bar .dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+    .term-bar .r { background: #e06c5b; }
+    .term-bar .y { background: #d9b24a; }
+    .term-bar .g { background: #71b86a; }
+    .term-bar .title { margin-left: 0.6rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.74rem; color: var(--term-dim); }
+    .term-body { margin: 0; padding: 1.1rem 1.2rem; font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: 0.8rem; line-height: 1.55; color: var(--term-fg); overflow-x: auto; white-space: pre; tab-size: 2; }
+    .term-body .cmd { color: #fff; }
+    .term-body .ok { color: var(--term-green); }
+    .term-body .bad { color: var(--term-red); }
+    .term-body .dim { color: var(--term-dim); }
+    .term-body .warn { color: var(--term-yellow); }
+    .term-body .head { color: var(--term-blue); }
+    .term-body .rule { color: var(--term-rule); }
+    .term-caption { margin: 0.85rem 0 0; font-size: 0.9rem; color: var(--ink-faint); font-style: italic; }
+
+    ul.ledger { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+    .ledger-row { display: grid; gap: 0.45rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+    .ledger-row .prov { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+    .ledger-row blockquote { margin: 0; padding-left: 0.95rem; border-left: 2px solid var(--accent); color: var(--ink); font-size: 0.99rem; line-height: 1.55; }
+    .ledger-row blockquote code { color: var(--ink); background: var(--code-bg); padding: 0.03rem 0.32rem; border-radius: 3px; }
+    .ledger-row .impl { margin: 0; color: var(--ink-soft); font-size: 0.96rem; line-height: 1.55; }
+
+    .note { margin-top: 3.5rem; padding: 1.1rem 1.25rem; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; color: var(--ink-soft); font-size: 0.98rem; }
+    .note p { margin-bottom: 0.6rem; }
+
+    footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); color: var(--ink-faint); font-size: 0.88rem; }
+    footer a { color: var(--ink-faint); }
+    footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    @media (max-width: 40rem) {
+      .hero h1 { font-size: 1.8rem; }
+      .nav-links { display: none; }
+    }
+    /* Long identifiers (RULEBOOK_AI_INDEX_URL, rule ids) must not push the
+       layout wider than the viewport on a narrow screen. Scoped away from
+       pre, where the terminal blocks scroll horizontally by design. */
+    :not(pre) > code { overflow-wrap: break-word; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <div class="wordmark"><span class="bucket">🪣</span> <a href="/">slop-mop</a></div>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/case-studies">Case Studies</a>
+        <a href="/in-the-wild">In the Wild</a>
+        <a href="/faq">FAQ</a>
+        <a href="/#start">Start</a>
+        <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>
+      </nav>
+    </div>
+
+    <p class="section-lead" style="margin-top:0;">
+      <a href="/case-studies">&larr; All case studies</a>
+    </p>
+
+    <section class="hero" style="margin-top:0;">
+      <h1>Onboarding OpenHands.</h1>
+      <p class="sub">
+        Running <code>sm refit</code> on a production platform of ~322k lines. The result was mostly a baseline rather than a clean-up.
+      </p>
+    </section>
+
+    <section>
+      <p class="section-lead">
+        OpenHands is a massive developer assistant platform. Onboarding its primary repository (300k+ lines of Python) to slop-mop required running <code>sm refit</code> to review all quality gates, establish baseline configurations, and execute step-by-step code remediation.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Repository</th>
+            <td><a href="https://github.com/OpenHands/OpenHands" target="_blank" rel="noopener">OpenHands/OpenHands</a></td>
+          </tr>
+          <tr>
+            <th>Codebase Size</th>
+            <td>~322,000 lines</td>
+          </tr>
+          <tr>
+            <th>Language</th>
+            <td>Python, TypeScript</td>
+          </tr>
+          <tr>
+            <th>Initial State</th>
+            <td>Unvalidated (Onboarding)</td>
+          </tr>
+          <tr>
+            <th>Final State</th>
+            <td><code>scour_clean</code> (Maintenance Mode Active)</td>
+          </tr>
+          <tr>
+            <th>Remediation PR</th>
+            <td><a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a></td>
+          </tr>
+          <tr>
+            <th>Barnacles filed (against ourselves)</th>
+            <td><a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Onboarding Findings & Remediation</h2>
+      <p>
+        Running <code>sm refit --start</code> analyzed the project across all active checks, identifying findings in <strong>7 different quality gates</strong>. The remediation path involved target refactoring alongside precise scoping configuration to lock down the codebase.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">Gate 1 · Deceptiveness: Bogus Tests</div>
+          <blockquote>&ldquo;Python test files starting with <code>test_</code> contained mock fixtures named <code>test_client</code> with no assertions. They were flagged as false-positive passing tests since they asserted no behavior.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Renamed helper fixtures from <code>test_client</code> to <code>client</code> across all unit test suites, and added explicit assertions to helper validation routines.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Gate 2 · Overconfidence: Missing Annotations</div>
+          <blockquote>&ldquo;Strict type checking flagged thousands of missing parameter and return annotations across legacy abstract factory classes.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Added targeted <code># type: ignore</code> annotations for dynamic abstract imports and configured <code>strict_typing: false</code> scoped to core directories in <code>.sb_config.json</code> to prevent noise while preserving main type safety.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Gate 3 · Myopia: Action Hygiene</div>
+          <blockquote>&ldquo;A manifest builder job in <code>_build-image.yml</code> called <code>actions/checkout</code> without explicit <code>contents: read</code> permissions.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Patched the GitHub Actions workflow permission blocks to explicitly grant read-only token permissions, securing the action checkout loop.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Gate 4 · Overconfidence: Type Blindness</div>
+          <blockquote>&ldquo;Strict pyright checking identified optional member access warnings (potential <code>None</code> attribute access) on serialization models and Litellm imports.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Added targeted <code># type: ignore[reportOptionalMemberAccess]</code> comments on optional fields, simplified import blocks, and resolved import-untyped risks.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Gates 5 &amp; 6 · Myopia: String Duplication and Code Sprawl</div>
+          <blockquote>&ldquo;FastAPI query docstrings, large mock databases, and massive legacy service modules (some up to 1,700 lines) tripped length thresholds.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Configured <code>.sb_config.json</code> to exclude test suites, scripts, and frontend directories from sprawl checks, and raised thresholds to lock in the legacy baseline length parameters.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Gate 7 · Overconfidence: Coverage Gaps</div>
+          <blockquote>&ldquo;Baseline project coverage check failed because the legacy codebase is at 49% coverage, falling short of the default 80% limit. Two sandbox port mapping tests were also failing.&rdquo;</blockquote>
+          <p class="impl"><strong>Remediation:</strong> Set <code>threshold: 49</code> in the configuration to freeze the baseline and prevent future regressions. Corrected the sandbox unit tests to assert string mappings for Docker ports rather than integer ports.</p>
+        </li>
+      </ul>
+
+      <h2>What was actually fixed — versus baselined</h2>
+      <p>
+        The findings above use the word &ldquo;remediation&rdquo; loosely. The split for a 400+-file PR whose bulk was reformatting: a <em>small</em> amount of fixing, and a large amount of accepting the existing state and guarding against regressions from there.
+      </p>
+
+      <table class="meta-table">
+        <tbody>
+          <tr>
+            <th>Genuinely fixed</th>
+            <td>GitHub Actions least-privilege (<code>contents: read</code>); a Docker sandbox test corrected (port-map keys <code>int</code>&nbsp;&rarr;&nbsp;<code>str</code>, and a hardcoded <code>/tmp</code> path swapped for <code>tempfile.gettempdir()</code>); and duplicate pagination <code>Query()</code> titles extracted to shared constants across 11 routers (see the second pass below). A small, real set of changes — not a 322k-line clean.</td>
+          </tr>
+          <tr>
+            <th>Suppressed</th>
+            <td><strong>61</strong> <code># type: ignore</code> / <code># noqa</code> markers added — the type and lint gates were silenced, not satisfied.</td>
+          </tr>
+          <tr>
+            <th>Baselined (Python)</th>
+            <td>Coverage frozen at the existing <code>49%</code>; <code>strict_typing: false</code> and <code>strict: false</code> downgrade the strict-typing and type-blindness gates.</td>
+          </tr>
+          <tr>
+            <th>Scoped out</th>
+            <td>The TypeScript front-end gate suite (formatting, dead-code, type-checking, bogus-tests) and three meta-gates — including <code>gate-dodging</code> and <code>silenced-gates</code>, the gates that flag suppression — are disabled in the committed config. The green board below is the Python core, not the whole repo.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Read the green board that follows with that in mind: it is real, but it is the score for a deliberately scoped, baselined Python surface — not a claim that 322k lines got cleaned.
+      </p>
+
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="title">OpenHands — sm status</span>
+        </div>
+<pre class="term-body"><span class="cmd">$ sm status</span>
+
+<span class="head">🪣 sm status — Project Status Check</span>
+<span class="dim">🔀 Project: OpenHands</span>
+<span class="dim">🔧 State: scour_clean</span>
+
+<span class="ok">✨ MAINTENANCE MODE ACTIVE · 20/20 checks passed</span>
+
+   <span class="ok">✅ myopia:dependency-risk.py  (passed)</span>
+   <span class="ok">✅ myopia:github-actions-hygiene  (passed)</span>
+   <span class="ok">✅ myopia:ambiguity-mines.py  (passed)</span>
+   <span class="ok">✅ deceptiveness:bogus-tests.py  (passed)</span>
+   <span class="ok">✅ laziness:complexity-creep.py  (passed)</span>
+   <span class="ok">✅ laziness:dead-code.py  (passed)</span>
+   <span class="ok">✅ laziness:debugger-artifacts  (passed)</span>
+   <span class="ok">✅ overconfidence:coverage-gaps.py  (passed)</span>
+   <span class="ok">✅ overconfidence:missing-annotations.py  (passed)</span>
+   <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span>
+   <span class="ok">✅ deceptiveness:gate-dodging  (passed)</span>
+   <span class="ok">✅ laziness:silenced-gates  (passed)</span></pre>
+      </div>
+      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board (a dozen of the twenty shown) — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
+
+      <h2>A second pass, looking for missed slop</h2>
+      <p>
+        We went back and looked for slop hiding behind the baseline. Little turned up. That is weak evidence either way: it is consistent with the code being in good shape, and also with our not having looked in the right places.
+      </p>
+      <ul>
+        <li><strong>The Python core is clean.</strong> Zero committed debugger artifacts; the lightweight, host-independent gates find essentially nothing to fix.</li>
+        <li><strong>Two meta-gates went back on.</strong> <code>gate-dodging</code> and <code>silenced-gates</code> both <em>pass</em> on this repo, so the baseline config isn't gaming the gates and no Python gate is muted. They are enabled again, asserting exactly that on every run.</li>
+        <li><strong>One genuine finding, fixed and verified.</strong> Tightening <code>string-duplication</code> surfaced the same FastAPI pagination <code>Query()</code> titles copy-pasted ~13&times; each across 11 routers — real duplication. We installed OpenHands&rsquo; toolchain, extracted them to shared constants in the existing <code>paging_utils.py</code>, and confirmed no behavior change (1,172 app-server and OpenAPI-schema tests still pass). With the duplication gone, the gate&rsquo;s threshold drops from the baselined <code>20</code> back to <code>4</code> — a real tightening, earned by a real fix, not a config dial.</li>
+      </ul>
+      <p>
+        OpenHands runs its own eslint, <code>tsc</code>, ruff and mypy, all green, so much of what slop-mop downgraded overlapped with checks the host already ran, or was stricter than them. That is the strongest statement the evidence supports; it does not establish that nothing was missed. Raising the 49% coverage floor is left to the OpenHands team.
+      </p>
+    </section>
+
+    <section>
+      <h2>What went wrong</h2>
+      <p class="section-lead">
+        The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">Misstep · It rewrote immutable migrations</div>
+          <blockquote>refit ran its formatters over <strong>94 applied database migrations</strong> in <code>enterprise/migrations/versions/</code>. Applied migrations are historical records — they must never be reformatted. The change was simply wrong, and it tripped OpenHands' migration-check CI on top of it.</blockquote>
+          <p class="impl"><strong>Cost &amp; fix:</strong> all 94 files were reverted to upstream. Filed as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">barnacle #263</a> — refit must exclude <code>migrations/</code> and other immutable or generated trees from formatting. <strong>Still open</strong> at the time of writing.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Wasted work · It double-formatted a repo that already had a formatter</div>
+          <blockquote>OpenHands already pins <code>ruff</code> (v0.12.5 / v0.4.1). refit reformatted <strong>417 files</strong> with its <em>own</em> formatters anyway — and ruff promptly disagreed, demanding 139 fixes and 32 reformats. The work had to be redone with the host's ruff, partially undoing slop-mop's. Net result: churn, spent tokens, and a red lint board until it was reconciled by hand.</blockquote>
+          <p class="impl"><strong>Cost &amp; fix:</strong> OpenHands' own ruff hooks were run and committed. Filed as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">barnacle #264</a> — when a repo pins a formatter, refit should defer to it, not fight it.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Framing · "Maintenance Mode" is not "your CI is green"</div>
+          <blockquote>A 20/20 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
+          <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both.</p>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        slop-mop by <a href="https://substack.com/@williammartin733738">William Martin</a> ·
+        <a href="/">Home</a> ·
+        <a href="/in-the-wild">In the Wild</a> ·
+        <a href="https://github.com/ScienceIsNeato/slop-mop">GitHub</a>
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

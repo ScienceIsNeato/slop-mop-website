@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>slop-mop case studies — real onboarding walkthroughs</title>
-  <meta name="description" content="Detailed case studies of onboarding production repositories to slop-mop Maintenance Mode. Walk through the gates, findings, and remediation steps on real codebases like OpenHands." />
+  <meta name="description" content="Real repositories onboarded to slop-mop with sm refit: what each run genuinely fixed, what it merely baselined, and the bugs it found in slop-mop itself." />
   <meta name="robots" content="index, follow" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#2f6b63" />
   <link rel="canonical" href="https://www.slop-mop.com/case-studies" />
 
   <meta property="og:title" content="slop-mop case studies — real onboarding walkthroughs" />
-  <meta property="og:description" content="Step-by-step walkthroughs of onboarding production repositories to slop-mop Maintenance Mode." />
+  <meta property="og:description" content="Two real onboarding runs at opposite ends of the size range — and the honest split between what got fixed and what got baselined." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.slop-mop.com/case-studies" />
   <meta property="og:site_name" content="slop-mop" />
@@ -131,6 +131,33 @@
       .hero h1 { font-size: 1.8rem; }
       .nav-links { display: none; }
     }
+
+    .verdict { color: var(--ink-soft); font-style: italic; }
+    /* Long identifiers (RULEBOOK_AI_INDEX_URL, rule ids) must not push the
+       layout wider than the viewport on a narrow screen. Scoped away from
+       pre, where the terminal blocks scroll horizontally by design. */
+    :not(pre) > code { overflow-wrap: break-word; }
+    .method { margin: 1.25rem 0 1.5rem; padding-left: 1.15rem; }
+    .method li { margin: 0 0 .55rem; }
+    .table-scroll { overflow-x: auto; margin: 1.5rem 0; }
+    .registry { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: .95rem; }
+    .registry th, .registry td {
+      text-align: left; vertical-align: top;
+      padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--rule);
+    }
+    .registry thead th {
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+      font-size: .7rem; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--ink-faint); font-weight: 400; border-bottom-color: var(--ink-faint);
+    }
+    .registry tbody th { font-weight: 700; white-space: nowrap; }
+    .dim-cell { color: var(--ink-faint); font-size: .85em; }
+    .registry tr.verdict-row td {
+      padding: 0 0 1.1rem; border-bottom: 2px solid var(--rule);
+      color: var(--ink-soft); font-size: .95rem;
+    }
+    .registry tr.verdict-row a { white-space: nowrap; font-weight: 700; }
+    .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   </style>
 </head>
 <body>
@@ -150,221 +177,171 @@
     <section class="hero" style="margin-top:0;">
       <h1>Case Studies.</h1>
       <p class="sub">
-        Real-world walkthroughs of onboarding production-grade codebases into slop-mop Maintenance Mode. Running <code>sm refit</code> to identify, categorize, and remediate legacy shortcuts, typing gaps, and configuration drift.
+        A register of every repository we have onboarded with <code>sm refit</code>, start to finish. Each run publishes its whole result: what got genuinely fixed, what was merely baselined, and every defect the run exposed in slop-mop itself.
       </p>
     </section>
 
     <section>
-      <h2>Why · refit, then maintenance</h2>
+      <h2>Method</h2>
       <p class="section-lead">
-        slop-mop runs in two modes that do very different jobs. Knowing which one a case study is about is half of reading it honestly.
+        Every run follows the same five steps.
+      </p>
+
+      <ol class="method">
+        <li><strong>Pick a repository cold.</strong> No coordination with maintainers and no pre-cleaning. Both runs so far are published; with two of them, that is a description of what happened, not evidence of a policy.</li>
+        <li><strong>Record the starting board.</strong> <code>sm scour</code> before anything is touched, artifact committed.</li>
+        <li><strong>Run <code>sm refit</code> gate by gate.</strong> Fix what can be fixed. Where the result is to accept the existing state instead, record it as a baseline.</li>
+        <li><strong>Record the finishing board</strong>, and separate the fixes from the baselines in a table.</li>
+        <li><strong>File tool friction against our own repo</strong> as a barnacle, and publish the count. See below.</li>
+      </ol>
+
+      <p>
+        The reason step 5 exists: a green board proves nothing on its own. It can mean the repo was already in good shape, or that we disabled gates and lowered thresholds until the screen turned green — and those look identical from the outside. So every study carries a fixed-versus-baselined table, a suppression count, and the anti-gaming meta-gates left switched on.
       </p>
 
       <table class="meta-table">
         <tbody>
           <tr>
             <th>Refit · one-time</th>
-            <td>Onboarding. The single goal is a <em>seaworthy ship</em>: a repo with no <em>known</em> issues and a committed baseline. You run it once, and this case study is about that run.</td>
+            <td>Onboarding, and what these studies document. The goal is a repo with no <em>known</em> issues and a committed baseline, so that afterwards anything flagged is <em>new</em> slop rather than years of accumulated noise.</td>
           </tr>
           <tr>
             <th>Maintenance · every watch</th>
-            <td><code>sm swab</code> &rarr; <code>sm scour</code> &rarr; <code>sm buff</code>. The steady state, and where the lion&rsquo;s share of the real code-quality work gets exercised. The <strong>buff cycle</strong> — turning CI results and review feedback into the next fix — is the throughput multiplier that makes the whole thing pay off.</td>
+            <td><code>sm swab</code> &rarr; <code>sm scour</code> &rarr; <code>sm buff</code>. The steady state. Not what these studies measure.</td>
           </tr>
         </tbody>
       </table>
-
-      <p>
-        Why bother with refit at all? Because you cannot swab and scour mechanically every watch and <em>trust the result</em> unless you start from a known baseline. Refit draws that line. After it, everything maintenance flags is <em>new</em> slop — from the change in front of you — not years of accumulated legacy noise. That line is what makes the daily loop fast and worth trusting.
-      </p>
-
-      <p>
-        The ideal refit is as frictionless as possible. Fixing obvious slop is not friction — auto-fix handles that for free. The friction worth naming is slop-mop&rsquo;s <em>own</em>: this is a young tool with limited support, and onboarding a 322k-line codebase surfaced real rough edges in the tool itself. We log those as <a href="https://github.com/ScienceIsNeato/slop-mop/labels/barnacle" target="_blank" rel="noopener">barnacles</a> rather than hide them.
-      </p>
-
-      <p>
-        And &ldquo;refit didn&rsquo;t fix much&rdquo; cuts both ways. It can mean the repo already had strong practices — or that slop-mop disabled gates and lowered thresholds just to go green, which is exactly what we <em>don&rsquo;t</em> want. This onboarding was a mix, leaning toward baselining (see the honest breakdown below). The upshot is still a good one: OpenHands is now mostly onboarded. Ideally the coverage threshold climbs from 49% over time — but the team can already run the maintenance loop without fighting refit churn.
-      </p>
     </section>
 
     <section>
-      <h2>Case Study #1 · Onboarding OpenHands</h2>
+      <h2>The register</h2>
       <p class="section-lead">
-        OpenHands is a massive developer assistant platform. Onboarding its primary repository (300k+ lines of Python) to slop-mop required running <code>sm refit</code> to review all quality gates, establish baseline configurations, and execute step-by-step code remediation.
+        Two runs so far, at opposite ends of the size range, most recent first.
       </p>
 
-      <table class="meta-table">
-        <tbody>
-          <tr>
-            <th>Repository</th>
-            <td><a href="https://github.com/OpenHands/OpenHands" target="_blank" rel="noopener">OpenHands/OpenHands</a></td>
-          </tr>
-          <tr>
-            <th>Codebase Size</th>
-            <td>~322,000 lines</td>
-          </tr>
-          <tr>
-            <th>Language</th>
-            <td>Python, TypeScript</td>
-          </tr>
-          <tr>
-            <th>Initial State</th>
-            <td>Unvalidated (Onboarding)</td>
-          </tr>
-          <tr>
-            <th>Final State</th>
-            <td><code>scour_clean</code> (Maintenance Mode Active)</td>
-          </tr>
-          <tr>
-            <th>Remediation PR</th>
-            <td><a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a></td>
-          </tr>
-          <tr>
-            <th>Barnacles filed (against ourselves)</th>
-            <td><a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Onboarding Findings & Remediation</h3>
-      <p>
-        Running <code>sm refit --start</code> analyzed the project across all active checks, identifying findings in <strong>7 different quality gates</strong>. The remediation path involved target refactoring alongside precise scoping configuration to lock down the codebase.
-      </p>
-
-      <ul class="ledger">
-        <li class="ledger-row">
-          <div class="prov">Gate 1 · Deceptiveness: Bogus Tests</div>
-          <blockquote>&ldquo;Python test files starting with <code>test_</code> contained mock fixtures named <code>test_client</code> with no assertions. They were flagged as false-positive passing tests since they asserted no behavior.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Renamed helper fixtures from <code>test_client</code> to <code>client</code> across all unit test suites, and added explicit assertions to helper validation routines.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Gate 2 · Overconfidence: Missing Annotations</div>
-          <blockquote>&ldquo;Strict type checking flagged thousands of missing parameter and return annotations across legacy abstract factory classes.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Added targeted <code># type: ignore</code> annotations for dynamic abstract imports and configured <code>strict_typing: false</code> scoped to core directories in <code>.sb_config.json</code> to prevent noise while preserving main type safety.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Gate 3 · Myopia: Action Hygiene</div>
-          <blockquote>&ldquo;A manifest builder job in <code>_build-image.yml</code> called <code>actions/checkout</code> without explicit <code>contents: read</code> permissions.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Patched the GitHub Actions workflow permission blocks to explicitly grant read-only token permissions, securing the action checkout loop.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Gate 4 · Overconfidence: Type Blindness</div>
-          <blockquote>&ldquo;Strict pyright checking identified optional member access warnings (potential <code>None</code> attribute access) on serialization models and Litellm imports.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Added targeted <code># type: ignore[reportOptionalMemberAccess]</code> comments on optional fields, simplified import blocks, and resolved import-untyped risks.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Gate 5 · Myopia: String Duplication & Code Sprawl</div>
-          <blockquote>&ldquo;FastAPI query docstrings, large mock databases, and massive legacy service modules (some up to 1,700 lines) tripped length thresholds.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Configured <code>.sb_config.json</code> to exclude test suites, scripts, and frontend directories from sprawl checks, and raised thresholds to lock in the legacy baseline length parameters.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Gate 6 · Overconfidence: Coverage Gaps</div>
-          <blockquote>&ldquo;Baseline project coverage check failed because the legacy codebase is at 49% coverage, falling short of the default 80% limit. Two sandbox port mapping tests were also failing.&rdquo;</blockquote>
-          <p class="impl"><strong>Remediation:</strong> Set <code>threshold: 49</code> in the configuration to freeze the baseline and prevent future regressions. Corrected the sandbox unit tests to assert string mappings for Docker ports rather than integer ports.</p>
-        </li>
-      </ul>
-
-      <h3>What was actually fixed — versus baselined</h3>
-      <p>
-        The findings above use the word &ldquo;remediation&rdquo; generously. Here is the honest split of a 400+-file PR whose bulk was reformatting: a <em>small</em> amount of genuine fixing, and a lot of &ldquo;accept the existing state and guard against regressions from here.&rdquo; Onboarding a 322k-line legacy codebase is mostly the latter — refit earns a clean <em>starting line</em>, not a rewrite of history — and we won&rsquo;t dress baselining up as a deep clean.
-      </p>
-
-      <table class="meta-table">
-        <tbody>
-          <tr>
-            <th>Genuinely fixed</th>
-            <td>GitHub Actions least-privilege (<code>contents: read</code>); a Docker sandbox test corrected (port-map keys <code>int</code>&nbsp;&rarr;&nbsp;<code>str</code>, and a hardcoded <code>/tmp</code> path swapped for <code>tempfile.gettempdir()</code>); and duplicate pagination <code>Query()</code> titles extracted to shared constants across 11 routers (see the second pass below). A small, real set of changes — not a 322k-line clean.</td>
-          </tr>
-          <tr>
-            <th>Suppressed</th>
-            <td><strong>61</strong> <code># type: ignore</code> / <code># noqa</code> markers added — the type and lint gates were silenced, not satisfied.</td>
-          </tr>
-          <tr>
-            <th>Baselined (Python)</th>
-            <td>Coverage frozen at the existing <code>49%</code>; <code>strict_typing: false</code> and <code>strict: false</code> downgrade the strict-typing and type-blindness gates.</td>
-          </tr>
-          <tr>
-            <th>Scoped out</th>
-            <td>The TypeScript front-end gate suite (formatting, dead-code, type-checking, bogus-tests) and three meta-gates — including <code>gate-dodging</code> and <code>silenced-gates</code>, the gates that flag suppression — are disabled in the committed config. The green board below is the Python core, not the whole repo.</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        Read the green board that follows with that in mind: it is real, but it is the score for a deliberately scoped, baselined Python surface — not a claim that 322k lines got cleaned.
-      </p>
-
-      <div class="terminal">
-        <div class="term-bar">
-          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="title">OpenHands — sm status</span>
-        </div>
-<pre class="term-body"><span class="cmd">$ sm status</span>
-
-<span class="head">🪣 sm status — Project Status Check</span>
-<span class="dim">🔀 Project: OpenHands</span>
-<span class="dim">🔧 State: scour_clean</span>
-
-<span class="ok">✨ MAINTENANCE MODE ACTIVE · 20/20 checks passed</span>
-
-   <span class="ok">✅ myopia:dependency-risk.py  (passed)</span>
-   <span class="ok">✅ myopia:github-actions-hygiene  (passed)</span>
-   <span class="ok">✅ myopia:ambiguity-mines.py  (passed)</span>
-   <span class="ok">✅ deceptiveness:bogus-tests.py  (passed)</span>
-   <span class="ok">✅ laziness:complexity-creep.py  (passed)</span>
-   <span class="ok">✅ laziness:dead-code.py  (passed)</span>
-   <span class="ok">✅ laziness:debugger-artifacts  (passed)</span>
-   <span class="ok">✅ overconfidence:coverage-gaps.py  (passed)</span>
-   <span class="ok">✅ overconfidence:missing-annotations.py  (passed)</span>
-   <span class="ok">✅ overconfidence:type-blindness.py  (passed)</span>
-   <span class="ok">✅ deceptiveness:gate-dodging  (passed)</span>
-   <span class="ok">✅ laziness:silenced-gates  (passed)</span></pre>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Register of case studies">
+        <table class="registry">
+          <thead>
+            <tr>
+              <th scope="col">Run</th>
+              <th scope="col">Scope</th>
+              <th scope="col">Start</th>
+              <th scope="col">Finish</th>
+              <th scope="col">Suppressed</th>
+              <th scope="col">Barnacles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="/case-studies/rulebook-ai">rulebook-ai</a><br /><span class="dim-cell">Aug 2026</span></th>
+              <td>8.5k lines<br /><span class="dim-cell">Python</span></td>
+              <td>8 gates failing<br /><span class="dim-cell">155 findings</span></td>
+              <td><strong>A+</strong><br /><span class="dim-cell">0 findings</span></td>
+              <td><strong>9</strong><br /><span class="dim-cell">7 are placeholders</span></td>
+              <td><strong>10</strong></td>
+            </tr>
+            <tr class="verdict-row">
+              <td colspan="6">
+                Mostly <strong>real fixes</strong>. Two latent crashes, a CI pipeline dead since GitHub retired <code>upload-artifact@v3</code>, a dependency pin that will not build, and a pytest config that stopped the suite booting. Coverage was the only thing baselined; strict typing was satisfied rather than downgraded.
+                <a href="/case-studies/rulebook-ai">Read the run &rarr;</a>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="/case-studies/openhands">OpenHands</a><br /><span class="dim-cell">Jun 2026</span></th>
+              <td>322k lines<br /><span class="dim-cell">Python, TS</span></td>
+              <td>7 gates failing</td>
+              <td><strong>Maintenance</strong><br /><span class="dim-cell">scour clean</span></td>
+              <td><strong>61</strong></td>
+              <td><strong>2</strong></td>
+            </tr>
+            <tr class="verdict-row">
+              <td colspan="6">
+                Mostly <strong>baselining</strong>. Coverage frozen at the existing 49%, two strict-typing gates downgraded, the front-end suite scoped out. A small set of genuine fixes came with it. On a codebase this size that was the practical ceiling.
+                <a href="/case-studies/openhands">Read the run &rarr;</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
 
-      <h3>A second pass · did we leave real slop on the table?</h3>
-      <p>
-        A fair question, so we went back and looked harder for genuine slop hiding behind the baseline. The honest result: very little turned up — and that scarcity is itself the signal.
-      </p>
-      <ul>
-        <li><strong>The Python core is clean.</strong> Zero committed debugger artifacts; the lightweight, host-independent gates find essentially nothing to fix.</li>
-        <li><strong>Two meta-gates went back on.</strong> <code>gate-dodging</code> and <code>silenced-gates</code> both <em>pass</em> on this repo, so the baseline config isn't gaming the gates and no Python gate is muted. They are enabled again, asserting exactly that on every run.</li>
-        <li><strong>One genuine finding, fixed and verified.</strong> Tightening <code>string-duplication</code> surfaced the same FastAPI pagination <code>Query()</code> titles copy-pasted ~13&times; each across 11 routers — real duplication. We installed OpenHands&rsquo; toolchain, extracted them to shared constants in the existing <code>paging_utils.py</code>, and confirmed no behavior change (1,172 app-server and OpenAPI-schema tests still pass). With the duplication gone, the gate&rsquo;s threshold drops from the baselined <code>20</code> back to <code>4</code> — a real tightening, earned by a real fix, not a config dial.</li>
-      </ul>
-      <p>
-        That answers the earlier ambiguity directly: this baseline reflects <em>good existing practice</em>, not slop swept under a rug. OpenHands runs its own eslint, <code>tsc</code>, ruff, and mypy — all green — so most of what slop-mop &ldquo;downgraded&rdquo; was either redundant with the host's CI or simply stricter than it. The honest next step belongs to the OpenHands team, not us: raise the 49% coverage floor over time. Onboarding earned the clean starting line; the deep cleaning, where any remains, happens in maintenance.
-      </p>
     </section>
 
     <section>
-      <h2>The honest ledger · where slop-mop got it wrong</h2>
+      <h2>Barnacles · what each run cost us</h2>
       <p class="section-lead">
-        We are not selling a green checkmark. The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
+        A <a href="https://github.com/ScienceIsNeato/slop-mop/labels/barnacle" target="_blank" rel="noopener">barnacle</a> is friction in slop-mop itself — a false positive, a misleading message, a gate that fails for the wrong reason. We file them against our own repo and publish the count per run.
       </p>
 
       <ul class="ledger">
         <li class="ledger-row">
-          <div class="prov">Misstep · It rewrote immutable migrations</div>
-          <blockquote>refit ran its formatters over <strong>94 applied database migrations</strong> in <code>enterprise/migrations/versions/</code>. Applied migrations are historical records — they must never be reformatted. The change was simply wrong, and it tripped OpenHands' migration-check CI on top of it.</blockquote>
-          <p class="impl"><strong>Cost &amp; fix:</strong> all 94 files were reverted to upstream. Filed against ourselves as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">barnacle #263</a> — refit must exclude <code>migrations/</code> and other immutable/generated trees from formatting.</p>
+          <div class="prov">rulebook-ai · <strong>10 barnacles</strong> · <a href="https://github.com/ScienceIsNeato/slop-mop/pull/331" target="_blank" rel="noopener">#331</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/pull/332" target="_blank" rel="noopener">#332</a></div>
+          <blockquote>The worst was a security scanner that never ran being reported as a finding: on a checkout without <code>pip-audit</code>, the gate announced &ldquo;1 security scanner(s) found issues&rdquo; — naming a vulnerability that did not exist while concealing that nothing had been audited. The guard for exactly that already existed in our code and was never called from anywhere.</blockquote>
+          <p class="impl">Also: a gate that could not tell code from prose, refit blaming the wrong gate, and two path bugs. All ten fixed. Our first attempt at fixing the scanner bug was <em>worse</em> than the bug, and review caught it.</p>
         </li>
         <li class="ledger-row">
-          <div class="prov">Wasted work · It double-formatted a repo that already had a formatter</div>
-          <blockquote>OpenHands already pins <code>ruff</code> (v0.12.5 / v0.4.1). refit reformatted <strong>417 files</strong> with its <em>own</em> formatters anyway — and ruff promptly disagreed, demanding 139 fixes and 32 reformats. The work had to be redone with the host's ruff, partially undoing slop-mop's. Net result: churn, spent tokens, and a red lint board until it was reconciled by hand.</blockquote>
-          <p class="impl"><strong>Cost &amp; fix:</strong> OpenHands' own ruff hooks were run and committed. Filed as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">barnacle #264</a> — when a repo pins a formatter, refit should defer to it, not fight it.</p>
-        </li>
-        <li class="ledger-row">
-          <div class="prov">Framing · "Maintenance Mode" is not "your CI is green"</div>
-          <blockquote>An 18/18 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
-          <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both, warts included.</p>
+          <div class="prov">OpenHands · <strong>2 barnacles</strong> · <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a></div>
+          <blockquote>refit reformatted <strong>94 applied database migrations</strong> — historical records that must never be rewritten — and separately re-formatted 417 files in a repo that already pinned its own formatter, which then disagreed and demanded the work be redone.</blockquote>
+          <p class="impl">One fixed the next day; <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a> is still open at the time of writing. The lower count is not a better result. This run drove fewer gates to green, so there were fewer opportunities to hit a defect &mdash; though we have not measured that, and two runs cannot separate the two explanations.</p>
         </li>
       </ul>
+
+      <p>
+        Twelve barnacles across two runs. We have no baseline to compare that against &mdash; no other run, and no equivalent figure published by comparable tools &mdash; so we are reporting the count, not characterising it as good or bad.
+      </p>
+    </section>
+
+    <section>
+      <h2>The loop · runs feed back into the tool</h2>
+      <p class="section-lead">
+        Each run is also a test of slop-mop. When the tool gets in the way, that friction is filed against our own repo as a barnacle and fixed there, so the next run uses a tool that no longer has that defect. The table records what that has actually cost so far.
+      </p>
+
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Barnacles and remediation churn per run">
+        <table class="registry">
+          <thead>
+            <tr>
+              <th scope="col">Run</th>
+              <th scope="col">Filed</th>
+              <th scope="col">Barnacles</th>
+              <th scope="col">Still open</th>
+              <th scope="col">Churn to fix them</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">OpenHands</th>
+              <td>9 Jun 2026</td>
+              <td><strong>2</strong></td>
+              <td>1</td>
+              <td>+714/&minus;30 · 4 files</td>
+            </tr>
+            <tr>
+              <th scope="row">rulebook-ai</th>
+              <td>10 Aug 2026</td>
+              <td><strong>10</strong></td>
+              <td>0</td>
+              <td>+4,811/&minus;1,319 · 32 files</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The intended effect of that loop is that later runs hit less friction. <strong>These two runs do not show it.</strong> The count went from 2 in June to 10 in August, and the remediation churn went up by roughly a factor of seven.
+      </p>
+
+      <p>
+        We can think of three explanations and cannot currently separate them. The June run stopped at a baseline with a number of gates disabled or scoped out, while the August run drove all 21 gates to green &mdash; more gates exercised is more surface on which to hit a defect. The two repositories are different enough that the runs may not be comparable. And the August run was more diligent about filing friction rather than working around it, which would raise the count without the tool being any worse.
+      </p>
+
+      <p>
+        That last one matters most: a barnacle count measures friction <em>noticed and recorded</em>, not defects present. It can rise because we looked harder. A third run, or a repeat run against a repository already onboarded, would say more than these two do &mdash; until then the trend line is one segment pointing the wrong way, and we are not going to describe that as the process working.
+      </p>
     </section>
 
     <div class="note">
       <p>
-        <strong>Lessons learned:</strong> Onboarding a large codebase is not about rewrite-everything. It is about identifying structural risks (like bogus tests), locking in a baseline (like coverage thresholds), and scoping rules so future PRs are validated without legacy noise.
-      </p>
-      <p>
-        It is also about being honest when the tool gets it wrong. Two of the findings above were slop-mop's <em>own</em> mistakes, and both became barnacles (<a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a>) — the same friction-reporting loop we ask every user to run. We would rather show you the warts and the fixes than a flawless screenshot.
+        <strong>Scope of these numbers.</strong> Each finish state is slop-mop's own board, not the repository's CI. The two are separate, and a green slop-mop board says nothing about whether the project's own pipeline passes. Neither run has been merged upstream: both live on branches we control.
       </p>
     </div>
 

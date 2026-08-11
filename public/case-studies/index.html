@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>slop-mop case studies — real onboarding walkthroughs</title>
-  <meta name="description" content="Real repositories onboarded to slop-mop with sm refit, start to finish: what each run fixed, what it merely baselined, and every bug the runs found in slop-mop itself." />
+  <meta name="description" content="Real repositories onboarded to slop-mop with sm refit: what each run genuinely fixed, what it merely baselined, and the bugs it found in slop-mop itself." />
   <meta name="robots" content="index, follow" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#2f6b63" />
@@ -157,6 +157,10 @@
     .verdict { color: var(--ink-soft); font-style: italic; }
     .study-more { font-weight: 700; }
     @media (max-width: 40rem) { .scoreline { gap: .5rem 1.1rem; } }
+    /* Long identifiers (RULEBOOK_AI_INDEX_URL, rule ids) must not push the
+       layout wider than the viewport on a narrow screen. Scoped away from
+       pre, where the terminal blocks scroll horizontally by design. */
+    :not(pre) > code { overflow-wrap: break-word; }
   </style>
 <body>
   <main class="wrap">

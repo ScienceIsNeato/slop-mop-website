@@ -131,6 +131,10 @@
       .hero h1 { font-size: 1.8rem; }
       .nav-links { display: none; }
     }
+    /* Long identifiers (RULEBOOK_AI_INDEX_URL, rule ids) must not push the
+       layout wider than the viewport on a narrow screen. Scoped away from
+       pre, where the terminal blocks scroll horizontally by design. */
+    :not(pre) > code { overflow-wrap: break-word; }
   </style>
 <body>
   <main class="wrap">

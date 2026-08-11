@@ -184,15 +184,15 @@
     <section>
       <h2>Method</h2>
       <p class="section-lead">
-        Every run follows the same five steps, and the last one is the one that matters.
+        Every run follows the same five steps.
       </p>
 
       <ol class="method">
-        <li><strong>Pick a repository cold.</strong> No coordination with maintainers, no pre-cleaning, no discarding a run that goes badly.</li>
+        <li><strong>Pick a repository cold.</strong> No coordination with maintainers and no pre-cleaning. Both runs so far are published; with two of them, that is a description of what happened, not evidence of a policy.</li>
         <li><strong>Record the starting board.</strong> <code>sm scour</code> before anything is touched, artifact committed.</li>
-        <li><strong>Run <code>sm refit</code> gate by gate.</strong> Fix what should be fixed. Where the honest move is to accept the existing state, baseline it and say so.</li>
+        <li><strong>Run <code>sm refit</code> gate by gate.</strong> Fix what can be fixed. Where the result is to accept the existing state instead, record it as a baseline.</li>
         <li><strong>Record the finishing board</strong>, and separate the fixes from the baselines in a table.</li>
-        <li><strong>File every piece of tool friction against ourselves</strong> as a barnacle, and publish the count. See below.</li>
+        <li><strong>File tool friction against our own repo</strong> as a barnacle, and publish the count. See below.</li>
       </ol>
 
       <p>
@@ -207,7 +207,7 @@
           </tr>
           <tr>
             <th>Maintenance · every watch</th>
-            <td><code>sm swab</code> &rarr; <code>sm scour</code> &rarr; <code>sm buff</code>. The steady state, where the real code-quality work gets exercised. Not what these studies measure.</td>
+            <td><code>sm swab</code> &rarr; <code>sm scour</code> &rarr; <code>sm buff</code>. The steady state. Not what these studies measure.</td>
           </tr>
         </tbody>
       </table>
@@ -216,7 +216,7 @@
     <section>
       <h2>The register</h2>
       <p class="section-lead">
-        Two runs so far, deliberately at opposite ends of the size range.
+        Two runs so far, at opposite ends of the size range, most recent first.
       </p>
 
       <div class="table-scroll" tabindex="0" role="region" aria-label="Register of case studies">
@@ -233,7 +233,7 @@
           </thead>
           <tbody>
             <tr>
-              <th scope="row"><a href="/case-studies/rulebook-ai">rulebook-ai</a></th>
+              <th scope="row"><a href="/case-studies/rulebook-ai">rulebook-ai</a><br /><span class="dim-cell">Aug 2026</span></th>
               <td>8.5k lines<br /><span class="dim-cell">Python</span></td>
               <td>8 gates failing<br /><span class="dim-cell">155 findings</span></td>
               <td><strong>A+</strong><br /><span class="dim-cell">0 findings</span></td>
@@ -247,7 +247,7 @@
               </td>
             </tr>
             <tr>
-              <th scope="row"><a href="/case-studies/openhands">OpenHands</a></th>
+              <th scope="row"><a href="/case-studies/openhands">OpenHands</a><br /><span class="dim-cell">Jun 2026</span></th>
               <td>322k lines<br /><span class="dim-cell">Python, TS</span></td>
               <td>7 gates failing</td>
               <td><strong>Maintenance</strong><br /><span class="dim-cell">scour clean</span></td>
@@ -256,7 +256,7 @@
             </tr>
             <tr class="verdict-row">
               <td colspan="6">
-                Mostly <strong>baselining</strong>. Coverage frozen at the existing 49%, two strict-typing gates downgraded, the front-end suite scoped out. A small set of genuine fixes came with it. On a codebase this size a clean starting line is the honest ceiling.
+                Mostly <strong>baselining</strong>. Coverage frozen at the existing 49%, two strict-typing gates downgraded, the front-end suite scoped out. A small set of genuine fixes came with it. On a codebase this size that was the practical ceiling.
                 <a href="/case-studies/openhands">Read the run &rarr;</a>
               </td>
             </tr>
@@ -269,7 +269,7 @@
     <section>
       <h2>Barnacles · what each run cost us</h2>
       <p class="section-lead">
-        A <a href="https://github.com/ScienceIsNeato/slop-mop/labels/barnacle" target="_blank" rel="noopener">barnacle</a> is friction in slop-mop itself — a false positive, a misleading message, a gate that fails for the wrong reason. We file them against our own repo and publish the count per run, because a tool that grades other people's code has no business hiding its own defect rate.
+        A <a href="https://github.com/ScienceIsNeato/slop-mop/labels/barnacle" target="_blank" rel="noopener">barnacle</a> is friction in slop-mop itself — a false positive, a misleading message, a gate that fails for the wrong reason. We file them against our own repo and publish the count per run.
       </p>
 
       <ul class="ledger">
@@ -281,18 +281,67 @@
         <li class="ledger-row">
           <div class="prov">OpenHands · <strong>2 barnacles</strong> · <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a>, <a href="https://github.com/ScienceIsNeato/slop-mop/issues/264" target="_blank" rel="noopener">#264</a></div>
           <blockquote>refit reformatted <strong>94 applied database migrations</strong> — historical records that must never be rewritten — and separately re-formatted 417 files in a repo that already pinned its own formatter, which then disagreed and demanded the work be redone.</blockquote>
-          <p class="impl">Both fixed. The lower count here is not a better result: this run touched fewer gates deeply, so it had fewer chances to trip over us.</p>
+          <p class="impl">One fixed the next day; <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">#263</a> is still open at the time of writing. The lower count is not a better result. This run drove fewer gates to green, so there were fewer opportunities to hit a defect &mdash; though we have not measured that, and two runs cannot separate the two explanations.</p>
         </li>
       </ul>
 
       <p>
-        Twelve barnacles across two runs is a high rate, and we would rather state it than let it be discovered. It is what a young tool with limited support looks like when it meets a codebase it has never seen. The number we care about is whether it falls on the next run.
+        Twelve barnacles across two runs. We have no baseline to compare that against &mdash; no other run, and no equivalent figure published by comparable tools &mdash; so we are reporting the count, not characterising it as good or bad.
+      </p>
+    </section>
+
+    <section>
+      <h2>The loop · runs feed back into the tool</h2>
+      <p class="section-lead">
+        Each run is also a test of slop-mop. When the tool gets in the way, that friction is filed against our own repo as a barnacle and fixed there, so the next run uses a tool that no longer has that defect. The table records what that has actually cost so far.
+      </p>
+
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Barnacles and remediation churn per run">
+        <table class="registry">
+          <thead>
+            <tr>
+              <th scope="col">Run</th>
+              <th scope="col">Filed</th>
+              <th scope="col">Barnacles</th>
+              <th scope="col">Still open</th>
+              <th scope="col">Churn to fix them</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">OpenHands</th>
+              <td>9 Jun 2026</td>
+              <td><strong>2</strong></td>
+              <td>1</td>
+              <td>+714/&minus;30 · 4 files</td>
+            </tr>
+            <tr>
+              <th scope="row">rulebook-ai</th>
+              <td>10 Aug 2026</td>
+              <td><strong>10</strong></td>
+              <td>0</td>
+              <td>+4,811/&minus;1,319 · 32 files</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The intended effect of that loop is that later runs hit less friction. <strong>These two runs do not show it.</strong> The count went from 2 in June to 10 in August, and the remediation churn went up by roughly a factor of seven.
+      </p>
+
+      <p>
+        We can think of three explanations and cannot currently separate them. The June run stopped at a baseline with a number of gates disabled or scoped out, while the August run drove all 21 gates to green &mdash; more gates exercised is more surface on which to hit a defect. The two repositories are different enough that the runs may not be comparable. And the August run was more diligent about filing friction rather than working around it, which would raise the count without the tool being any worse.
+      </p>
+
+      <p>
+        That last one matters most: a barnacle count measures friction <em>noticed and recorded</em>, not defects present. It can rise because we looked harder. A third run, or a repeat run against a repository already onboarded, would say more than these two do &mdash; until then the trend line is one segment pointing the wrong way, and we are not going to describe that as the process working.
       </p>
     </section>
 
     <div class="note">
       <p>
-        <strong>What these are for:</strong> to show what onboarding a real repository actually looks like, including the parts that make us look bad. If a run went badly we publish it anyway; if the tool broke something we name it and link the fix.
+        <strong>Scope of these numbers.</strong> Each finish state is slop-mop's own board, not the repository's CI. The two are separate, and a green slop-mop board says nothing about whether the project's own pipeline passes. Neither run has been merged upstream: both live on branches we control.
       </p>
     </div>
 

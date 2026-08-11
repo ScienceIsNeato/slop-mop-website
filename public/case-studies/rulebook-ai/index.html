@@ -164,7 +164,7 @@
 
     <section>
       <p class="section-lead">
-        Case study #1 onboarded a 322k-line giant, and the honest answer there was <em>mostly baselining</em>. So we ran the opposite experiment: a small repo, picked from the wild, that had never heard of us — <a href="https://github.com/botingw/rulebook-ai" target="_blank" rel="noopener">botingw/rulebook-ai</a>, ~8.5k lines of Python. No coordination with the maintainer, no cherry-picking, nothing pre-cleaned. Run <code>sm refit</code> and publish whatever falls out.
+        The first run covered a 322k-line codebase and produced mostly baselining. So we ran the opposite experiment: a small repo, picked from the wild, that had never heard of us — <a href="https://github.com/botingw/rulebook-ai" target="_blank" rel="noopener">botingw/rulebook-ai</a>, ~8.5k lines of Python. No coordination with the maintainer, no cherry-picking, nothing pre-cleaned. Run <code>sm refit</code> and publish whatever falls out.
       </p>
 
       <table class="meta-table">
@@ -191,11 +191,11 @@
           </tr>
           <tr>
             <th>Their test suite</th>
-            <td>56 passing before · <strong>81 passing</strong> after (25 added). It was green when we found it, and green when we left it — see the ledger for the stretch in the middle where we broke it.</td>
+            <td>56 passing at the merge-base · <strong>81 passing</strong> at the end (25 added). Three were failing in between, from a regression of ours; see the ledger.</td>
           </tr>
           <tr>
             <th>Remediation</th>
-            <td>22 commits · 69 files · +3,431/&minus;1,871. Not yet offered upstream — this is our branch, not a merged contribution, and we are not going to imply otherwise.</td>
+            <td>22 commits · 69 files · +3,431/&minus;1,871, on a branch we control. Not offered upstream, so none of it has been reviewed by the maintainer.</td>
           </tr>
           <tr>
             <th>Barnacles filed (against ourselves)</th>
@@ -204,35 +204,35 @@
         </tbody>
       </table>
 
-      <h2>Two crashes that were waiting to happen</h2>
+      <h2>Two latent crashes</h2>
       <p>
-        The headline result is not the grade. It is that a type gate, on a repo nobody had type-checked end to end, surfaced two genuine latent crashes. Neither is a style complaint — both are exceptions waiting for the right input.
+        The type gates surfaced two latent crashes. Both raise at runtime given the right input, rather than being style complaints.
       </p>
 
       <ul class="ledger">
         <li class="ledger-row">
           <div class="prov">Crash 1 · <code>Path / None</code></div>
           <blockquote>Single-file assistant specs did <code>target_path / spec.filename</code>, but <code>filename</code> is declared <code>Optional[str]</code>. A spec that omitted it raised a bare <code>TypeError</code> deep inside the copy strategy, naming neither the spec nor the field.</blockquote>
-          <p class="impl"><strong>Fixed:</strong> the single-file branch now fails fast with a message naming the offending spec. The condition was unreachable only by luck of which specs shipped.</p>
+          <p class="impl"><strong>Fixed:</strong> the single-file branch now fails fast with a message naming the spec. Every spec that ships today sets a filename, so the path is not reachable through the shipped configuration &mdash; it is reachable through a custom or future one.</p>
         </li>
         <li class="ledger-row">
           <div class="prov">Crash 2 · the <code>dict.get</code> default that never fires</div>
           <blockquote><code>entry.get("path", "").strip("/")</code>. The default applies when the key is <em>absent</em> — not when it is present and <code>null</code>. A manifest with an explicit <code>path: null</code> returned <code>None</code> and blew up on <code>.strip()</code>.</blockquote>
-          <p class="impl"><strong>Fixed:</strong> <code>(entry.get("path") or "")</code>. A one-character class of bug that no formatter and no linter was ever going to catch, and which reads as correct at a glance.</p>
+          <p class="impl"><strong>Fixed:</strong> <code>(entry.get("path") or "")</code>. Neither the formatter nor the linters flagged it; the type checker did.</p>
         </li>
       </ul>
 
-      <h2>The gate was right about their CI</h2>
+      <h2>A retired CI action, and two setup blockers</h2>
       <p>
-        <code>github-actions-hygiene</code> opened with 23 findings, and one of them was not hygiene at all: the workflows still called <code>actions/upload-artifact@v3</code>, which GitHub <em>retired</em>. Their pipeline had been failing on that since <strong>September 2025</strong> — visible on their Actions tab the whole time, and exactly the kind of thing that becomes invisible once a badge has been red long enough. Pinning the actions to SHAs and moving to <code>v4</code> put their own CI back in business as a side effect of running our gate.
+        <code>github-actions-hygiene</code> opened with 23 findings, and one of them was not hygiene at all: the workflows still called <code>actions/upload-artifact@v3</code>, which GitHub <em>retired</em>. Their pipeline had been failing on that since <strong>September 2025</strong>. We pinned the actions to SHAs and moved to <code>v4</code> on our branch, which fixes it there. Their CI is still failing, because we have not offered the branch upstream &mdash; the fix exists only in our copy.
       </p>
       <p>
-        The same pass found <code>grpcio==1.71.0</code> pinned exactly, which has no wheel for current Python and fails to compile from source, and a <code>[tool.pytest]</code> block whose <code>addopts</code> was a string where modern pytest requires a list — the test suite refused to <em>start</em> until that was fixed. Neither is glamorous. Both are the difference between a new contributor getting a working checkout and giving up.
+        The same pass found <code>grpcio==1.71.0</code> pinned exactly, which has no wheel for Python 3.14 and fails to compile from source, and a <code>[tool.pytest]</code> block whose <code>addopts</code> was a string where current pytest requires a list &mdash; the suite would not start until that was fixed. Both block a fresh checkout.
       </p>
 
       <h2>What was actually fixed — versus baselined</h2>
       <p>
-        Case study #1 earned a hard sentence: most of that PR was accepting the existing state. This one lands differently, and the numbers say so plainly.
+        The equivalent table for OpenHands records mostly baselining. This run's split is different.
       </p>
 
       <table class="meta-table">
@@ -251,11 +251,11 @@
           </tr>
           <tr>
             <th>Scoped out</th>
-            <td>The <code>tool_starters</code> and <code>vscode-extension</code> trees, excluded from six gates. These are template packs copied byte-for-byte into user projects, so the same file gets analysed once per copy — pyright reported <strong>555</strong> errors that were really 18, repeated. Excluding verbatim distribution copies is scoping, not hiding, but it is a judgement call and it belongs in this row.</td>
+            <td>The <code>tool_starters</code> and <code>vscode-extension</code> trees, excluded from six gates. These are template packs copied byte-for-byte into user projects, so the same file gets analysed once per copy — pyright reported <strong>555</strong> errors that were really 18, repeated. This is a judgement call: the excluded code is real code that ships to users, and it is no longer checked.</td>
           </tr>
           <tr>
             <th>Not compromised</th>
-            <td>Strict typing was <em>satisfied</em>, not downgraded — <code>strict_typing</code> and pyright <code>strict</code> are both still <code>true</code> and both pass. The two anti-gaming meta-gates, <code>gate-dodging</code> and <code>silenced-gates</code>, are enabled and green, which is the machine-checkable version of this whole table.</td>
+            <td><code>strict_typing</code> and pyright <code>strict</code> are both still <code>true</code> and both pass, so the typing gates were satisfied rather than downgraded. <code>gate-dodging</code> and <code>silenced-gates</code> are enabled and passing.</td>
           </tr>
         </tbody>
       </table>
@@ -292,23 +292,51 @@
 <span class="ok">✨ NO SLOP DETECTED · 21 checks passed</span>
    <span class="head">⚓ hull rating: A+ — shipshape · 0 findings</span></pre>
       </div>
-      <p class="term-caption">The finishing board, run uncached. Twenty-one gates — including the two meta-gates that exist specifically to catch a config tuned for a green screenshot.</p>
+      <p class="term-caption">The finishing board, run uncached. Twenty-one gates, including <code>gate-dodging</code> and <code>silenced-gates</code>.</p>
 
-      <h2>The honest ledger · we broke their tests, then nearly hid it</h2>
+      <h2>Friction that was not a bug</h2>
       <p class="section-lead">
-        The worst thing in this case study is ours, and it is worth more than the grade.
+        Things that made the run slower without being defects in either codebase. They are listed because they are what the process actually cost, and none of them appear in a grade.
+      </p>
+
+      <ul class="ledger">
+        <li class="ledger-row">
+          <div class="prov">The repo had no environment, so gates ran against whatever was on PATH</div>
+          <blockquote>With no virtualenv present, slop-mop resolved a Homebrew <code>mypy</code> rather than a project one. It reported missing <code>yaml</code> stubs that a project environment would have had, so the first type results did not reflect the project's own toolchain.</blockquote>
+          <p class="impl">Building a virtualenv fixed it, and installing <code>pip-audit</code> and <code>pytest-testmon</code> into it was required before two more gates would run at all. That is three manual steps before a full board was even possible.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Creating that environment then destabilised gates that had been passing</div>
+          <blockquote>The new virtualenv brought ruff 0.16, where the machine had 0.15. Ruff 0.16 formats python blocks inside Markdown by default, so <code>sloppy-formatting</code> started failing on 9 rule-pack documents that had passed minutes earlier. Nothing in the repository had changed.</blockquote>
+          <p class="impl">Resolved by excluding the distributed packs, but the general problem stands: which tool versions a gate resolves can change the board without any code changing.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">Cached gate results hid the fixes</div>
+          <blockquote>Gate results are cached against the files they scan, not against slop-mop's own code. After fixing a false positive in slop-mop, the gate kept returning the cached failure, which reads exactly like the fix not working.</blockquote>
+          <p class="impl">Every verification after a tool change needed <code>--no-cache</code>. Correct behaviour for a released tool, actively misleading while developing against one.</p>
+        </li>
+        <li class="ledger-row">
+          <div class="prov">The refit plan went stale on every config change</div>
+          <blockquote>Excluding a directory edits <code>.sb_config.json</code>, which the plan was generated from, so each subsequent <code>sm refit --iterate</code> opened with a warning that the plan might be stale. Since the standard remedy for several gates <em>is</em> a config change, the warning fired for most of the run.</blockquote>
+          <p class="impl">Not filed as a barnacle: the warning is accurate. It is still noise that trains you to ignore it.</p>
+        </li>
+      </ul>
+
+      <h2>What went wrong</h2>
+      <p class="section-lead">
+        Four of the items below are defects in slop-mop. Two are mistakes we made in their code.
       </p>
 
       <ul class="ledger">
         <li class="ledger-row">
           <div class="prov">Our regression · a security fix that deleted a feature</div>
           <blockquote>A bandit finding flagged <code>urlopen</code> on a URL from an environment variable. The obvious fix — restrict the scheme to <code>http</code>/<code>https</code> — quietly removed a supported workflow: pointing <code>RULEBOOK_AI_INDEX_URL</code> at a local file for offline use, which is also how their entire community-index integration suite builds its fixtures. Three of their tests went red because of us.</blockquote>
-          <p class="impl"><strong>Fix:</strong> <code>file:</code> belongs in the allowlist. The variable is operator-supplied configuration, not attacker-controlled input, and the allowlist still keeps <code>urlopen</code> away from schemes nobody intends. Satisfying a scanner is not the same as being correct.</p>
+          <p class="impl"><strong>Fix:</strong> <code>file:</code> was added back to the allowlist. The variable is operator-supplied configuration rather than attacker-controlled input, and the allowlist still excludes other schemes.</p>
         </li>
         <li class="ledger-row">
           <div class="prov">Worse · the check that proved it was &ldquo;pre-existing&rdquo; was wrong</div>
           <blockquote>We reported those three failures as pre-existing, on the strength of stashing our changes and re-running. But <code>git stash</code> only removes <em>uncommitted</em> work — the breaking change was already committed, so it survived the stash and every &ldquo;baseline&rdquo; run reproduced the failure. It looked convincingly like someone else&rsquo;s problem.</blockquote>
-          <p class="impl"><strong>Fix:</strong> check out the actual merge-base in a throwaway worktree and run it there. All 56 of their tests pass at the merge-base — which made the regression, and the false alarm, ours. A wrong baseline does not produce an error message; it produces confidence.</p>
+          <p class="impl"><strong>Fix:</strong> check out the merge-base in a throwaway worktree and run there. All 56 of their tests pass at the merge-base, so both the regression and the incorrect diagnosis were ours.</p>
         </li>
         <li class="ledger-row">
           <div class="prov">Barnacle · a scanner that never ran, reported as a finding</div>
@@ -317,7 +345,7 @@
         </li>
         <li class="ledger-row">
           <div class="prov">Barnacle · the gate that could not tell code from prose</div>
-          <blockquote>Python subscript-then-call is byte-identical to Markdown link syntax, so a documented <code>handlers[cmd](args)</code> inside a fenced code block was reported as a broken link to a file named after the argument. After we fixed 12 genuinely broken links, this false positive was the <em>only</em> thing standing between the gate and green.</blockquote>
+          <blockquote>Python subscript-then-call is byte-identical to Markdown link syntax, so a documented <code>handlers[cmd](args)</code> inside a fenced code block was reported as a broken link to a file named after the argument. After 12 genuinely broken links were fixed, this false positive was the remaining finding.</blockquote>
           <p class="impl"><strong>Fix:</strong> fenced blocks are skipped and inline code spans blanked. Review then found two more holes in that fix — multi-backtick spans and spans wrapping a line — both now covered by tests.</p>
         </li>
         <li class="ledger-row">

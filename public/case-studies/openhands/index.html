@@ -158,7 +158,7 @@
     <section class="hero" style="margin-top:0;">
       <h1>Onboarding OpenHands.</h1>
       <p class="sub">
-        Running <code>sm refit</code> on a production platform large enough that a baseline is the honest ceiling.
+        Running <code>sm refit</code> on a production platform of ~322k lines. The result was mostly a baseline rather than a clean-up.
       </p>
     </section>
 
@@ -240,7 +240,7 @@
 
       <h2>What was actually fixed — versus baselined</h2>
       <p>
-        The findings above use the word &ldquo;remediation&rdquo; generously. Here is the honest split of a 400+-file PR whose bulk was reformatting: a <em>small</em> amount of genuine fixing, and a lot of &ldquo;accept the existing state and guard against regressions from here.&rdquo; Onboarding a 322k-line legacy codebase is mostly the latter — refit earns a clean <em>starting line</em>, not a rewrite of history — and we won&rsquo;t dress baselining up as a deep clean.
+        The findings above use the word &ldquo;remediation&rdquo; loosely. The split for a 400+-file PR whose bulk was reformatting: a <em>small</em> amount of fixing, and a large amount of accepting the existing state and guarding against regressions from there.
       </p>
 
       <table class="meta-table">
@@ -295,9 +295,9 @@
       </div>
       <p class="term-caption">Executing <code>sm status</code> on OpenHands reports a clean slop-mop board (a dozen of the twenty shown) — slop-mop's own gate suite, now with the <code>gate-dodging</code> and <code>silenced-gates</code> meta-gates re-enabled in the second pass. That is a separate scoreboard from OpenHands' native CI; getting <em>that</em> green took the reconciliation in the ledger below — and as of this writing it is, with the PR passing every check and blocked only on a maintainer's review.</p>
 
-      <h2>A second pass · did we leave real slop on the table?</h2>
+      <h2>A second pass, looking for missed slop</h2>
       <p>
-        A fair question, so we went back and looked harder for genuine slop hiding behind the baseline. The honest result: very little turned up — and that scarcity is itself the signal.
+        We went back and looked for slop hiding behind the baseline. Little turned up. That is weak evidence either way: it is consistent with the code being in good shape, and also with our not having looked in the right places.
       </p>
       <ul>
         <li><strong>The Python core is clean.</strong> Zero committed debugger artifacts; the lightweight, host-independent gates find essentially nothing to fix.</li>
@@ -305,21 +305,21 @@
         <li><strong>One genuine finding, fixed and verified.</strong> Tightening <code>string-duplication</code> surfaced the same FastAPI pagination <code>Query()</code> titles copy-pasted ~13&times; each across 11 routers — real duplication. We installed OpenHands&rsquo; toolchain, extracted them to shared constants in the existing <code>paging_utils.py</code>, and confirmed no behavior change (1,172 app-server and OpenAPI-schema tests still pass). With the duplication gone, the gate&rsquo;s threshold drops from the baselined <code>20</code> back to <code>4</code> — a real tightening, earned by a real fix, not a config dial.</li>
       </ul>
       <p>
-        That answers the earlier ambiguity directly: this baseline reflects <em>good existing practice</em>, not slop swept under a rug. OpenHands runs its own eslint, <code>tsc</code>, ruff, and mypy — all green — so most of what slop-mop &ldquo;downgraded&rdquo; was either redundant with the host's CI or simply stricter than it. The honest next step belongs to the OpenHands team, not us: raise the 49% coverage floor over time. Onboarding earned the clean starting line; the deep cleaning, where any remains, happens in maintenance.
+        OpenHands runs its own eslint, <code>tsc</code>, ruff and mypy, all green, so much of what slop-mop downgraded overlapped with checks the host already ran, or was stricter than them. That is the strongest statement the evidence supports; it does not establish that nothing was missed. Raising the 49% coverage floor is left to the OpenHands team.
       </p>
     </section>
 
     <section>
-      <h2>The honest ledger · where slop-mop got it wrong on OpenHands</h2>
+      <h2>What went wrong</h2>
       <p class="section-lead">
-        We are not selling a green checkmark. The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
+        The board above is slop-mop's own gates. Getting OpenHands' <em>native</em> CI to pass — its <code>ruff</code> lint and its migration checks — took real work, and slop-mop made genuine mistakes getting there. We hold ourselves to the same standard we ask of our users: when the tool creates friction, file a barnacle. Here are the ones this case study produced, against our own repo.
       </p>
 
       <ul class="ledger">
         <li class="ledger-row">
           <div class="prov">Misstep · It rewrote immutable migrations</div>
           <blockquote>refit ran its formatters over <strong>94 applied database migrations</strong> in <code>enterprise/migrations/versions/</code>. Applied migrations are historical records — they must never be reformatted. The change was simply wrong, and it tripped OpenHands' migration-check CI on top of it.</blockquote>
-          <p class="impl"><strong>Cost &amp; fix:</strong> all 94 files were reverted to upstream. Filed against ourselves as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">barnacle #263</a> — refit must exclude <code>migrations/</code> and other immutable/generated trees from formatting.</p>
+          <p class="impl"><strong>Cost &amp; fix:</strong> all 94 files were reverted to upstream. Filed as <a href="https://github.com/ScienceIsNeato/slop-mop/issues/263" target="_blank" rel="noopener">barnacle #263</a> — refit must exclude <code>migrations/</code> and other immutable or generated trees from formatting. <strong>Still open</strong> at the time of writing.</p>
         </li>
         <li class="ledger-row">
           <div class="prov">Wasted work · It double-formatted a repo that already had a formatter</div>
@@ -329,7 +329,7 @@
         <li class="ledger-row">
           <div class="prov">Framing · "Maintenance Mode" is not "your CI is green"</div>
           <blockquote>A 20/20 slop-mop board means slop-mop's gates pass. It does not mean OpenHands' native pipeline passed — that needed the two fixes above, plus keeping the branch synced with a fast-moving <code>main</code>. Onboarding earns you a baseline; it does not hand you a green host pipeline for free.</blockquote>
-          <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both, warts included.</p>
+          <p class="impl"><strong>Takeaway:</strong> the slop-mop board and the host's CI are two separate scoreboards. <a href="https://github.com/OpenHands/OpenHands/pull/14719" target="_blank" rel="noopener">PR #14719</a> shows both.</p>
         </li>
       </ul>
     </section>

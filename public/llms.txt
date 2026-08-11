@@ -23,6 +23,8 @@ slop-mop runs as a CLI (`sm`) that any coding agent can call, ships as a Claude 
 - [FAQ](https://www.slop-mop.com/faq): common questions about slop-mop
 
 ## Evidence
-- [Case studies](https://www.slop-mop.com/case-studies): real onboarding walkthroughs
+- [Case studies](https://www.slop-mop.com/case-studies): real onboarding walkthroughs, with what each run fixed versus baselined
+- [rulebook-ai, cold](https://www.slop-mop.com/case-studies/rulebook-ai): ~8.5k-line repo taken from 8 failing gates to A+; found two latent crashes and a CI pipeline dead since September 2025
+- [Onboarding OpenHands](https://www.slop-mop.com/case-studies/openhands): ~322k lines, mostly baselining — the honest ceiling for a codebase that size
 - [In the wild](https://www.slop-mop.com/in-the-wild): real captured agent sessions
 - [Harm Reduction for Addicted Agents](https://scienceisneato.substack.com/p/slop-mop-harm-reduction-for-addicted): why it exists and why it works

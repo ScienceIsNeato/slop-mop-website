@@ -345,7 +345,7 @@
         </li>
         <li class="ledger-row">
           <div class="prov">Barnacle · the gate that could not tell code from prose</div>
-          <blockquote>Python subscript-then-call is byte-identical to Markdown link syntax, so a documented <code>handlers[cmd](args)</code> inside a fenced code block was reported as a broken link to a file named after the argument. After 12 genuinely broken links were fixed, this false positive was the remaining finding.</blockquote>
+          <blockquote>Python subscript-then-call matches the inline-link pattern exactly, so a documented <code>handlers[cmd](args)</code> inside a fenced code block was reported as a broken link to a file named after the argument. After 12 genuinely broken links were fixed, this false positive was the remaining finding.</blockquote>
           <p class="impl"><strong>Fix:</strong> fenced blocks are skipped and inline code spans blanked. Review then found two more holes in that fix — multi-backtick spans and spans wrapping a line — both now covered by tests.</p>
         </li>
         <li class="ledger-row">
